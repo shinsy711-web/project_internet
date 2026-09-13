@@ -1,0 +1,29 @@
+carrier,product,speed_label,no_contract,y1,y2,y3,source
+KT,인터넷 슬림,100M,44000,37950,31900,22000,smartchoice
+KT,인터넷 슬림 와이파이,100M,52800,45100,37400,23100,smartchoice
+KT,인터넷 슬림플러스,200M,46200,41800,37400,30250,smartchoice
+KT,인터넷 베이직,500M,50600,45100,39600,33000,smartchoice
+KT,인터넷 베이직 와이파이,500M,59400,52250,45100,34100,smartchoice
+KT,인터넷 에센스,1G,59400,52800,46200,38500,smartchoice
+KT,인터넷 에센스 와이파이,1G,68200,59950,51700,38500,smartchoice
+KT,인터넷 프리미엄,2.5G,82500,66000,55000,44000,smartchoice
+KT,인터넷 프리미엄플러스,5G,104500,82500,71500,60500,smartchoice
+KT,인터넷 슈퍼프리미엄,10G,132000,110000,99000,88000,smartchoice
+SK,광랜,100M,39600,34100,30800,22000,smartchoice=bworld
+SK,광랜 와이파이,100M,49500,41800,36300,23100,smartchoice=bworld
+SK,기가라이트,500M,52800,46200,39600,33000,smartchoice=bworld
+SK,기가라이트 와이파이,500M,62700,53900,45100,34100,smartchoice=bworld
+SK,기가,1G,58300,51700,45100,38500,smartchoice=bworld
+SK,기가 와이파이,1G,68200,59400,50600,39600,smartchoice
+SK,기가프리미엄X2.5G,2.5G,82500,68200,60500,48400,smartchoice
+SK,기가프리미엄X5G,5G,88000,73700,66000,59400,smartchoice
+SK,기가프리미엄X10G,10G,115500,101200,93500,86900,smartchoice
+LG,19요금제,100M,39600,31130,26070,20900,smartchoice
+LG,광랜안심,100M,42900,36080,28270,22000,smartchoice
+LG,기가인터넷slim,500M,49500,42900,37400,30800,smartchoice
+LG,기가인터넷slim 안심,500M,52800,47300,40700,33000,smartchoice
+LG,기가인터넷,1G,58300,50600,44000,36300,smartchoice
+LG,기가인터넷안심,1G,58300,51700,45650,38500,smartchoice
+LG,와이파이기본_2.5기가,2.5G,72600,62700,52800,44000,smartchoice
+LG,와이파이기본_5기가,5G,83600,74800,66000,58300,smartchoice
+LG,와이파이기본_10기가,10G,111100,102300,93500,85800,smartchoice

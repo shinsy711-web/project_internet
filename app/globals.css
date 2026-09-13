@@ -1,0 +1,1357 @@
+/* project34 — 인터넷 가입 비교 (사이트 A)
+ *
+ * 디자인 뼈대는 project32(국비노트): stone 중립 + 밝은 초록, 85rem 넓은 컨테이너, 초록 워시 섹션 교차,
+ * 벤토 카드 · Step 행 · 강조열 비교표 · FAQ 카드 · 떠 있는 하단 바.
+ *
+ * 규칙 시트(content_seo_rules) 때문에 32 에서 뺀 것
+ *   - #overview 핵심 수치 <dl class="facts">  → 규칙 24(dl 금지) · 9(h2 없는 section 금지)
+ *   - 월계수 수치띠 · "맞는 경우" 비교 카드 · 배경 이미지 → 원고에 없는 카드형 블록. 원고를 받은 뒤 다시 판단
+ *
+ * 이 파일이 담당하는 것
+ *   1) @theme 디자인 토큰 단일 소스
+ *   2) 본문 타이포그래피 — 본문은 content/*.md 에서 생성되어 태그에 class 를 붙일 수 없다
+ *   3) 구조 블록 · 원고 대기 스켈레톤
+ *
+ * ⚠️ `container` · `table-wrap` · `hero-lead` 는 scripts/rules-audit.mjs 가 문자열로 찾는다. 이름을 바꾸지 말 것.
+ */
+
+@import 'tailwindcss';
+
+@theme {
+  /* ── 색 (stone 중립 + 브랜드) — 브랜드색을 바꾸려면 accent·cta 7개만 ── */
+  --color-canvas: #fafaf9;
+  --color-surface: #ffffff;
+  --color-surface-2: #f5f5f4;
+  --color-ink: #1c1917;
+  --color-ink-soft: #57534e;
+  --color-line: #e7e5e4;
+  --color-line-strong: #d6d3d1;
+
+  --color-brand: #15803d;
+
+  /* ⚠️ 밝은 초록은 글자색으로 쓸 수 없다(#22c55e 흰 배경 2.3:1).
+       accent = 글자·아이콘·링크 → #15803d (5.0:1)
+       cta    = 버튼 면 → #22c55e, 그 위 글자는 흰색이 아니라 #052e16 (6.5:1) */
+  --color-accent: #15803d;
+  --color-accent-soft: #f0fdf4;
+  --color-accent-line: #bbf7d0;
+  --color-cta: #22c55e;
+  --color-cta-2: #16a34a;
+  --color-cta-ink: #052e16;
+
+  /* 의미색 — tip(앰버) / notice(로즈·주의) / info(파랑·수정일·설계 정보) */
+  --color-tip: #fffbeb;
+  --color-tip-line: #fde68a;
+  --color-tip-ink: #92400e;
+  --color-notice: #fef2f2;
+  --color-notice-line: #fecaca;
+  --color-notice-ink: #b91c1c;
+  --color-info: #eff6ff;
+  --color-info-line: #bfdbfe;
+  --color-info-ink: #1d4ed8;
+
+  --radius-card: 16px;
+  --radius-sm: 12px;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 1px 2px rgb(28 25 23 / 0.04), 0 8px 24px -14px rgb(28 25 23 / 0.14);
+  --shadow-card-hover: 0 2px 4px rgb(28 25 23 / 0.06), 0 14px 30px -14px rgb(21 128 61 / 0.22);
+
+  --container-content: 85rem;
+  --container-shell: 85rem;
+
+  --font-sans: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
+    'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
+}
+
+:root {
+  /* 긴 문단 한 줄 폭. 컨테이너는 넓게 쓰되 문단은 여기서 끊는다 */
+  --measure: 60rem;
+}
+
+/* 섹션템플릿의 `div.container`. Tailwind v4 에도 같은 이름 유틸리티가 있어 레이어 밖에 선언한다(모든 @layer 보다 우선) */
+.container {
+  width: 100%;
+  max-width: var(--container-content);
+  margin-inline: auto;
+  padding-inline: 1rem;
+  padding-block: 2.5rem;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding-inline: 1.5rem;
+    padding-block: 3.25rem;
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 5rem;
+    scroll-padding-bottom: 7rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.78;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: var(--color-accent-line);
+    color: var(--color-ink);
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* ── 본문 타이포그래피 ── */
+
+  article > section {
+    position: relative;
+    background: var(--color-surface);
+  }
+  article > section > .container {
+    padding-block: 3.5rem;
+  }
+  @media (min-width: 768px) {
+    article > section > .container {
+      padding-block: 5rem;
+    }
+  }
+  article section[id] {
+    scroll-margin-top: 5rem;
+  }
+  article > section.is-alt {
+    background: color-mix(in srgb, var(--color-accent-soft) 55%, var(--color-surface));
+  }
+
+  article h1 {
+    font-size: clamp(1.75rem, 5.2vw, 2.35rem);
+    font-weight: 800;
+    line-height: 1.3;
+    letter-spacing: -0.03em;
+    margin: 0 0 1.25rem;
+    text-wrap: balance;
+  }
+
+  article h2 {
+    max-width: var(--measure);
+    font-size: clamp(1.5rem, 3.2vw, 2.05rem);
+    font-weight: 800;
+    line-height: 1.32;
+    letter-spacing: -0.03em;
+    margin: 0 0 1.75rem;
+    text-wrap: balance;
+  }
+  article h2::before {
+    content: '';
+    display: block;
+    width: 2.25rem;
+    height: 4px;
+    margin-bottom: 0.9rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-cta);
+  }
+
+  article h3 {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    line-height: 1.5;
+    letter-spacing: -0.012em;
+    margin: 2rem 0 0.5rem;
+  }
+
+  article p {
+    margin: 0 0 1.0625rem;
+  }
+  article p:last-child {
+    margin-bottom: 0;
+  }
+
+  article .container > p,
+  article .container > ul:not(.cards):not(.related),
+  article .container > h3 {
+    max-width: var(--measure);
+  }
+
+  article strong {
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+
+  article a {
+    color: var(--color-accent);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+    text-decoration-color: color-mix(in srgb, var(--color-accent) 35%, transparent);
+    transition: color 0.18s ease, text-decoration-color 0.18s ease;
+  }
+  article a:hover {
+    text-decoration-color: currentColor;
+  }
+
+  article ul {
+    margin: 0 0 1.125rem;
+    padding-left: 1.35em;
+    list-style: disc;
+  }
+  article ul li {
+    margin-bottom: 0.5rem;
+    padding-left: 0.15em;
+  }
+  article ul li::marker {
+    color: var(--color-accent);
+    font-weight: 700;
+  }
+  article ul li:last-child {
+    margin-bottom: 0;
+  }
+
+  article ol {
+    margin: 0 0 1.125rem;
+    padding-left: 1.35em;
+  }
+}
+
+@layer components {
+  /* ── 건너뛰기 링크 ── */
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    background: var(--color-cta);
+    color: var(--color-cta-ink);
+    font-weight: 700;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0 0 var(--radius-card) 0;
+  }
+  .skip-link:focus {
+    left: 0;
+  }
+
+  /* ── 헤더 탭 링크 — 좁은 화면은 한 줄 가로 스크롤. 링크는 전부 DOM 에 있다(햄버거처럼 감추지 않음) ── */
+  .hnav-list {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    scrollbar-width: none;
+  }
+  .hnav-list::-webkit-scrollbar {
+    display: none;
+  }
+  @media (min-width: 768px) {
+    .hnav-list {
+      height: 100%;
+      overflow: visible;
+    }
+  }
+  .hnav {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0 0.7rem;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--color-ink-soft);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.18s ease;
+  }
+  .hnav:hover {
+    color: var(--color-ink);
+  }
+  .hnav::after {
+    content: '';
+    position: absolute;
+    left: 0.7rem;
+    right: 0.7rem;
+    bottom: 0;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--color-cta);
+    transform: scaleX(0);
+    transition: transform 0.2s ease;
+  }
+  .hnav:hover::after {
+    transform: scaleX(0.4);
+  }
+  .hnav.is-active {
+    color: var(--color-ink);
+    font-weight: 800;
+  }
+  .hnav.is-active::after {
+    transform: scaleX(1);
+  }
+  @media (min-width: 768px) {
+    .hnav {
+      height: 100%;
+      padding: 0 0.85rem;
+    }
+    .hnav::after {
+      left: 0.85rem;
+      right: 0.85rem;
+    }
+  }
+
+  /* ── 브레드크럼 띠 — article 밖. 아래 히어로와 같은 초록으로 이어진다 ── */
+  .topband {
+    background: var(--color-accent-soft);
+  }
+  .topband > .container {
+    padding-block: 0.9rem 0;
+  }
+  .crumbs {
+    font-size: 0.82rem;
+    color: var(--color-ink-soft);
+  }
+  .crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .crumbs a {
+    color: var(--color-ink-soft);
+    text-decoration: none;
+    transition: color 0.18s ease;
+  }
+  .crumbs a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+  .crumbs [aria-current='page'] {
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+  .crumbs .sep {
+    color: var(--color-line-strong);
+  }
+
+  /* ── 히어로 (섹션템플릿 1) ── */
+  article > section#hero {
+    background: linear-gradient(180deg, var(--color-accent-soft) 0%, var(--color-accent-soft) 30%, var(--color-surface) 100%);
+  }
+  article > section#hero > .container {
+    padding-block: 2.25rem 3.25rem;
+  }
+  @media (min-width: 768px) {
+    article > section#hero > .container {
+      padding-block: 3rem 4.5rem;
+    }
+  }
+  .hero-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .hero-main {
+    min-width: 0;
+    max-width: 46rem;
+  }
+  .hero-side {
+    width: 100%;
+    max-width: 17rem;
+    margin-inline: auto;
+  }
+  @media (min-width: 900px) {
+    .hero-grid {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 3rem;
+    }
+    .hero-main {
+      flex: 1 1 auto;
+    }
+    .hero-side {
+      flex: 0 0 min(26rem, 38%);
+      max-width: none;
+      margin: 0;
+    }
+  }
+  .hero-art {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  article > section#hero h1 {
+    font-size: clamp(2rem, 4.6vw, 3.15rem);
+    line-height: 1.22;
+    letter-spacing: -0.035em;
+    margin: 0 0 1.1rem;
+  }
+  .hero-lead {
+    font-size: clamp(1rem, 1.6vw, 1.12rem);
+    line-height: 1.75;
+    color: var(--color-ink-soft);
+    margin: 0 0 1.75rem;
+  }
+  article .hero-lead {
+    margin-bottom: 1.75rem;
+  }
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+    margin-bottom: 1.25rem;
+  }
+  .hero-actions .btn-cta {
+    padding-inline: 1.5rem;
+  }
+  @media (max-width: 479px) {
+    .hero-actions .btn-cta {
+      width: 100%;
+    }
+  }
+
+  .eyebrow {
+    display: inline-block;
+    margin-bottom: 0.9rem;
+    padding: 0.28rem 0.75rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+    border: 1px solid var(--color-accent-line);
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: var(--color-accent);
+  }
+
+  /* ── 최종 수정일 (섹션템플릿 10 · info) ── */
+  .stamp {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.6rem;
+    padding: 0.55rem 0.85rem;
+    border: 1px solid var(--color-info-line);
+    border-radius: var(--radius-sm);
+    background: var(--color-info);
+    font-size: 0.78rem;
+    color: var(--color-info-ink);
+  }
+  .stamp b {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 800;
+  }
+
+  /* ── 목차 — 히어로 아래 전체 폭, 다단 ── */
+  .toc {
+    margin-top: 2.25rem;
+    padding: 1.35rem 1.5rem 1.1rem;
+    background: var(--color-surface-2);
+    border-radius: var(--radius-card);
+  }
+  .toc-title {
+    margin: 0 0 0.6rem;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: var(--color-ink);
+  }
+  .toc ol {
+    counter-reset: toc;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    columns: 3 16rem;
+    column-gap: 2.25rem;
+  }
+  .toc li {
+    counter-increment: toc;
+    margin: 0;
+    border-bottom: 1px solid var(--color-line);
+    break-inside: avoid;
+  }
+  .toc a {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0.55rem 0.25rem;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    text-decoration: none;
+    transition: color 0.18s ease;
+  }
+  .toc a::before {
+    content: counter(toc, decimal-leading-zero);
+    flex: 0 0 auto;
+    font-size: 0.72rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-accent);
+  }
+  .toc a:hover {
+    color: var(--color-accent);
+  }
+
+  /* ── 벤토 카드 (원고의 `- **라벨**: 설명` 목록) ── */
+  .cards {
+    list-style: none;
+    display: grid;
+    gap: 0.875rem;
+    margin: 0 0 1.75rem;
+    padding: 0;
+    counter-reset: card;
+  }
+  .cards > li {
+    counter-increment: card;
+    margin: 0;
+    padding: 1.25rem 1.25rem 1.2rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+  }
+  .cards > li:hover {
+    border-color: var(--color-accent-line);
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+  }
+  .cards > li::before {
+    content: counter(card, decimal-leading-zero);
+    display: inline-flex;
+    margin-bottom: 0.75rem;
+    padding: 0.12rem 0.5rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-accent-soft);
+    font-size: 0.72rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-accent);
+  }
+  .cards-t {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    color: var(--color-ink);
+  }
+  .cards-d {
+    display: block;
+    font-size: 0.92rem;
+    line-height: 1.72;
+    color: var(--color-ink-soft);
+  }
+  @media (min-width: 768px) {
+    .cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1280px) {
+    .cards {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  /* ── Step 행 (원고의 `1. 2. 3.` — 순서 있는 목록은 ol, 규칙 22) ── */
+  .steps {
+    list-style: none;
+    display: grid;
+    gap: 0.75rem;
+    margin: 0 0 1.75rem;
+    padding: 0;
+  }
+  article ol.steps {
+    padding-left: 0;
+  }
+  .steps > li {
+    margin: 0;
+    padding: 1.1rem 1.25rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    transition: border-color 0.18s ease;
+  }
+  .steps > li:hover {
+    border-color: var(--color-accent-line);
+  }
+  .steps-t {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.55;
+    color: var(--color-ink);
+  }
+  .steps-no {
+    flex: 0 0 auto;
+    padding: 0.15rem 0.55rem;
+    border-radius: 6px;
+    background: var(--color-cta);
+    color: var(--color-cta-ink);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .steps-d {
+    margin: 0.5rem 0 0;
+    font-size: 0.92rem;
+    line-height: 1.72;
+    color: var(--color-ink-soft);
+  }
+  @media (min-width: 640px) {
+    .steps-d {
+      padding-left: 4.25rem;
+    }
+  }
+
+  /* ── 비교표 (규칙 13·14·18) — 첫 데이터 열 강조, 좁은 화면은 가로 스크롤(JS 로 열을 지우지 않는다) ── */
+  .table-wrap {
+    margin: 0 0 1.75rem;
+    overflow-x: auto;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    -webkit-overflow-scrolling: touch;
+  }
+  .table-wrap table {
+    width: 100%;
+    min-width: 32rem;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .table-wrap caption {
+    caption-side: top;
+    text-align: left;
+    padding: 1rem 1.1rem 0.75rem;
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: var(--color-ink);
+  }
+  @media (max-width: 767px) {
+    .table-wrap caption {
+      width: calc(100vw - 2rem);
+    }
+    .table-wrap caption::after {
+      content: ' — 좌우로 밀어서 보기';
+      font-weight: 600;
+      color: var(--color-accent);
+      white-space: nowrap;
+    }
+  }
+  .table-wrap th,
+  .table-wrap td {
+    padding: 0.85rem 1rem;
+    text-align: left;
+    vertical-align: top;
+    line-height: 1.6;
+    border-top: 1px solid var(--color-line);
+  }
+  .table-wrap thead th {
+    font-size: 0.875rem;
+    font-weight: 800;
+    white-space: nowrap;
+    color: var(--color-ink);
+    border-bottom: 2px solid var(--color-ink);
+  }
+  .table-wrap tbody th[scope='row'] {
+    font-weight: 700;
+    white-space: nowrap;
+    color: var(--color-ink);
+  }
+  .table-wrap thead th:nth-child(2) {
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+  }
+  .table-wrap tbody td:nth-child(2) {
+    background: color-mix(in srgb, var(--color-accent-soft) 75%, transparent);
+    font-weight: 600;
+  }
+  .table-wrap tbody tr:hover {
+    background: var(--color-canvas);
+  }
+
+  /* ── FAQ 카드 (섹션템플릿 7 — h3 질문형) ── */
+  .faq-item {
+    max-width: var(--measure);
+    background: var(--color-surface-2);
+    border: 1px solid transparent;
+    border-radius: var(--radius-card);
+    padding: 1.15rem 1.35rem;
+    margin-bottom: 0.625rem;
+    transition: border-color 0.18s ease, background-color 0.18s ease;
+  }
+  .faq-item:hover {
+    border-color: var(--color-accent-line);
+    background: var(--color-accent-soft);
+  }
+  .faq-item:last-child {
+    margin-bottom: 0;
+  }
+  .faq-item h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin: 0 0 0.45rem;
+    font-size: 1.03rem;
+    font-weight: 800;
+  }
+  .faq-item h3::before {
+    content: 'Q';
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 1.375rem;
+    height: 1.375rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-cta);
+    color: var(--color-cta-ink);
+    font-size: 0.78rem;
+    font-weight: 900;
+  }
+  .faq-item p {
+    margin: 0;
+    padding-left: 1.925rem;
+    color: var(--color-ink-soft);
+  }
+  .faq-item p + p {
+    margin-top: 0.625rem;
+  }
+
+  /* ── 알림 박스 (주의사항 · 팁) ── */
+  .callout,
+  .tip {
+    margin: 0 0 1.125rem;
+    padding: 0.875rem 1.125rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+  .callout {
+    background: var(--color-notice);
+    border: 1px solid var(--color-notice-line);
+    color: var(--color-notice-ink);
+  }
+  .tip {
+    background: var(--color-tip);
+    border: 1px solid var(--color-tip-line);
+    color: var(--color-tip-ink);
+  }
+
+  /* ── 본문 중간 인라인 CTA 링크 ([…](#apply)) ── */
+  article a[href='#apply']:not(.btn-cta) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    font-weight: 800;
+    text-decoration-color: currentColor;
+    white-space: nowrap;
+  }
+
+  /* ── CTA 버튼 면 ── */
+  .btn-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3.25rem;
+    padding: 0.9rem 1.25rem;
+    border: 0;
+    border-radius: 12px;
+    background: var(--color-cta);
+    color: var(--color-cta-ink);
+    font: inherit;
+    font-size: 1rem;
+    font-weight: 800;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: var(--shadow-card);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.12s ease;
+  }
+  .btn-cta:hover {
+    background: var(--color-cta-2);
+    box-shadow: var(--shadow-card-hover);
+  }
+  .btn-cta:active {
+    transform: translateY(1px);
+  }
+  /* 준비 중 — 반투명 CTA 면 위 글자는 대비가 무너지므로 중립 면으로 */
+  .btn-cta.is-pending,
+  .btn-cta.is-pending:hover {
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-line);
+    color: var(--color-ink-soft);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+
+  /* ── 상담 섹션 · 폼 (섹션템플릿 8 — 번호 + 동의만) ── */
+  article > section#apply {
+    background: linear-gradient(160deg, var(--color-accent-soft) 0%, #e3fbe3 100%);
+  }
+  .lead-card {
+    max-width: 30rem;
+    margin-top: 1.5rem;
+    padding: 1.35rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+  }
+  .lead-form {
+    display: grid;
+    gap: 0.9rem;
+  }
+  .lead-field {
+    display: grid;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+  .lead-field input {
+    min-height: 3rem;
+    padding: 0 0.9rem;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    font: inherit;
+    font-size: 1rem;
+    color: var(--color-ink);
+  }
+  .lead-field input:disabled {
+    background: var(--color-surface-2);
+    cursor: not-allowed;
+  }
+  .lead-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    font-size: 0.85rem;
+    color: var(--color-ink-soft);
+  }
+  .lead-consent input {
+    flex: 0 0 auto;
+    width: 1.15rem;
+    height: 1.15rem;
+    margin-top: 0.3rem;
+    accent-color: var(--color-accent);
+  }
+  .lead-form .btn-cta {
+    width: 100%;
+  }
+  article .lead-note {
+    margin: 0;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--color-ink-soft);
+  }
+  article .lead-note:empty {
+    display: none;
+  }
+  article .lead-note.is-done {
+    color: var(--color-accent);
+    font-weight: 700;
+  }
+  article .lead-note.is-error {
+    color: var(--color-notice-ink);
+    font-weight: 700;
+  }
+  .lead-consent-all {
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--color-line);
+    font-weight: 800;
+    color: var(--color-ink);
+  }
+  .lead-terms {
+    margin: -0.5rem 0 0 1.7rem;
+    font-size: 0.8rem;
+    color: var(--color-ink-soft);
+  }
+  .lead-terms summary {
+    width: fit-content;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  article .lead-terms p {
+    margin: 0.4rem 0 0;
+    padding: 0.7rem 0.8rem;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-2);
+    font-size: 0.8rem;
+    line-height: 1.7;
+  }
+
+  /* ── 계산기 (도구 섹션 — /tools/penalty/ · /tools/expiry/) ── */
+  .calc-card {
+    max-width: 40rem;
+    margin-top: 1.25rem;
+    padding: 1.35rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+  }
+  .calc-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: 0.9rem;
+  }
+  .calc-field {
+    display: grid;
+    align-content: start;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+  .calc-field input,
+  .calc-field select {
+    width: 100%;
+    min-height: 3rem;
+    padding: 0 0.9rem;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    font: inherit;
+    font-size: 1rem;
+    color: var(--color-ink);
+  }
+  .calc-field small {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--color-ink-soft);
+  }
+  .calc-result {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 1.1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-line);
+  }
+  article .calc-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+    margin: 0;
+    font-size: 0.95rem;
+  }
+  .calc-row span {
+    color: var(--color-ink-soft);
+  }
+  article .calc-row.is-total {
+    font-size: 1.15rem;
+    font-weight: 800;
+  }
+  .calc-row.is-total b {
+    color: var(--color-accent);
+  }
+  article .calc-hint {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--color-ink-soft);
+  }
+  article .calc-warn {
+    margin: 0;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--color-notice-line);
+    border-radius: var(--radius-sm);
+    background: var(--color-notice);
+    font-size: 0.85rem;
+    color: var(--color-notice-ink);
+  }
+
+  /* ── 관련 문서 (섹션템플릿 9) ── */
+  .related {
+    list-style: none;
+    display: grid;
+    gap: 0.625rem;
+    margin: 0;
+    padding: 0;
+  }
+  article ul.related {
+    padding-left: 0;
+  }
+  @media (min-width: 640px) {
+    .related {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .related {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .related li {
+    margin: 0;
+    padding: 0;
+  }
+  .related a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    min-height: 3.25rem;
+    padding: 0.8rem 1.1rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    color: var(--color-ink);
+    font-weight: 700;
+    text-decoration: none;
+    transition: border-color 0.18s ease, color 0.18s ease;
+  }
+  .related a::after {
+    content: '';
+    flex: 0 0 auto;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-top: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+    transform: rotate(45deg);
+    opacity: 0.5;
+  }
+  .related a:hover {
+    border-color: var(--color-accent-line);
+    color: var(--color-accent);
+  }
+
+  /* ── 떠 있는 하단 CTA 바 — JS 없이 스크롤 구동 애니메이션 ── */
+  .cta-bar-spacer {
+    height: 6rem;
+  }
+  .cta-bar {
+    position: fixed;
+    inset-inline: 0;
+    bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+    z-index: 40;
+    width: min(46rem, calc(100% - 1.5rem));
+    margin-inline: auto;
+  }
+  .cta-bar-inner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.55rem 0.55rem 0.55rem 1.15rem;
+    background: color-mix(in srgb, var(--color-surface) 94%, transparent);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--color-line);
+    border-radius: 18px;
+    box-shadow: 0 20px 44px -18px rgb(28 25 23 / 0.35);
+  }
+  .cta-bar-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    line-height: 1.35;
+  }
+  .cta-bar-text b {
+    display: block;
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: var(--color-ink);
+  }
+  .cta-bar .btn-cta {
+    flex: 0 0 auto;
+    min-height: 2.75rem;
+    padding: 0.55rem 1rem;
+    font-size: 0.9rem;
+    box-shadow: none;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .cta-bar {
+        animation: cta-bar-in linear both;
+        animation-timeline: scroll(root block);
+        animation-range: 220px 520px;
+      }
+      @keyframes cta-bar-in {
+        from {
+          opacity: 0;
+          transform: translateY(140%);
+          visibility: hidden;
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+          visibility: visible;
+        }
+      }
+    }
+  }
+
+  /* ════════ 원고 대기 스켈레톤 — data-scaffold 페이지 전용 ════════ */
+
+  .sk {
+    display: block;
+    height: 0.85em;
+    margin: 0.5em 0;
+    max-width: 100%;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--color-surface-2) 0%, var(--color-line) 50%, var(--color-surface-2) 100%);
+    background-size: 200% 100%;
+    animation: sk-shimmer 1.8s ease-in-out infinite;
+  }
+  .sk.is-inline {
+    display: inline-block;
+    height: 0.8em;
+    margin: 0;
+    vertical-align: middle;
+  }
+  h1 > .sk,
+  h2 > .sk {
+    height: 0.72em;
+    margin: 0.2em 0;
+  }
+  .table-wrap .sk {
+    height: 0.7rem;
+    margin: 0.35rem 0;
+  }
+  @keyframes sk-shimmer {
+    from {
+      background-position: 100% 0;
+    }
+    to {
+      background-position: -100% 0;
+    }
+  }
+
+  /* 시트 설계 표시 — 섹션 번호·유형·키워드·표 번호(data-note) + 메모(data-memo).
+     속성값을 의사요소로 그린다 — DOM 글자가 아니라 본문·감사 스크립트에 섞이지 않는다 */
+  [data-scaffold] section[data-note]::before {
+    content: attr(data-note);
+    display: block;
+    max-width: var(--container-content);
+    margin-inline: auto;
+    padding: 0.9rem 1rem 0;
+    font-size: 0.72rem;
+    font-weight: 800;
+    line-height: 1.5;
+    color: var(--color-info-ink);
+  }
+  @media (min-width: 768px) {
+    [data-scaffold] section[data-note]::before {
+      padding-inline: 1.5rem;
+    }
+  }
+  article[data-scaffold] > section[data-note] > .container {
+    padding-top: 1.25rem;
+  }
+  [data-scaffold] h1[data-memo]::after,
+  [data-scaffold] h2[data-memo]::after {
+    content: '✎ ' attr(data-memo);
+    display: block;
+    margin-top: 0.6rem;
+    padding: 0.45rem 0.7rem;
+    border: 1px dashed var(--color-info-line);
+    border-radius: var(--radius-sm);
+    background: var(--color-info);
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.55;
+    letter-spacing: 0;
+    color: var(--color-info-ink);
+  }
+
+  /* 원고의 `> 인용` — 참고 박스 (예: KT 공식가·스마트초이스가 병기 설명) */
+  article .note {
+    max-width: var(--measure);
+    margin: 0 0 1.125rem;
+    padding: 0.95rem 1.15rem;
+    border-left: 4px solid var(--color-tip-line);
+    border-radius: var(--radius-sm);
+    background: var(--color-tip);
+    font-size: 0.9375rem;
+    line-height: 1.72;
+    color: var(--color-ink);
+  }
+  article code {
+    padding: 0.05rem 0.35rem;
+    border-radius: 6px;
+    background: var(--color-surface-2);
+    font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', monospace;
+    font-size: 0.86em;
+  }
+  /* 한글 기울임은 합성 글꼴이라 깨져 보인다 — 기울이지 않고 색으로만 구분 */
+  article em {
+    font-style: normal;
+    color: var(--color-ink-soft);
+  }
+  article .link-cta {
+    margin-top: 1.25rem;
+  }
+  .btn-ghost.is-pending {
+    border-color: var(--color-line);
+    background: var(--color-surface-2);
+    color: var(--color-ink-soft);
+    cursor: not-allowed;
+  }
+
+  /* 보조 버튼 — 도구·전환 섹션 링크, 측정 페이지 히어로의 상담 링크 */
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: 2.75rem;
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--color-accent-line);
+    border-radius: 12px;
+    background: var(--color-surface);
+    color: var(--color-accent);
+    font: inherit;
+    font-size: 0.92rem;
+    font-weight: 800;
+    text-decoration: none;
+    cursor: pointer;
+    transition: border-color 0.18s ease, background-color 0.18s ease;
+  }
+  .btn-ghost:hover {
+    border-color: var(--color-accent);
+    background: var(--color-accent-soft);
+  }
+  article a.btn-ghost {
+    text-decoration: none;
+  }
+  .hero-actions .btn-ghost {
+    min-height: 3.25rem;
+  }
+  .link-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 1.25rem 0 0;
+    padding: 0;
+  }
+  article ul.link-row {
+    padding-left: 0;
+  }
+  .link-row li {
+    margin: 0;
+    padding: 0;
+  }
+
+  /* 계산기 자리 */
+  .tool-slot {
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 0.25rem;
+    min-height: 15rem;
+    padding: 2rem;
+    border: 2px dashed var(--color-accent-line);
+    border-radius: var(--radius-card);
+    background: color-mix(in srgb, var(--color-accent-soft) 50%, var(--color-surface));
+  }
+  .tool-slot .sk {
+    width: 100%;
+  }
+  .tool-slot-btn {
+    display: block;
+    width: 10rem;
+    height: 3rem;
+    margin-top: 1rem;
+    border-radius: 12px;
+    background: var(--color-accent-line);
+  }
+
+  /* 시트 배정 정보 패널 */
+  .plan-wrap {
+    background: var(--color-info);
+    border-bottom: 1px solid var(--color-info-line);
+  }
+  .plan-wrap > .container {
+    padding-block: 0.25rem;
+  }
+  .plan summary {
+    display: flex;
+    align-items: center;
+    min-height: 2.75rem;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: var(--color-info-ink);
+  }
+  .plan-list {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0 0 0.9rem;
+    padding: 0;
+    list-style: none;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--color-ink);
+  }
+  .plan-list li {
+    display: grid;
+    grid-template-columns: 8.5rem minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+  .plan-list b {
+    font-weight: 700;
+    color: var(--color-info-ink);
+  }
+  .plan-list code {
+    justify-self: start;
+    padding: 0.05rem 0.45rem;
+    border: 1px solid var(--color-info-line);
+    border-radius: 6px;
+    background: var(--color-surface);
+    font-size: 0.8rem;
+  }
+  @media (max-width: 519px) {
+    .plan-list li {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+    }
+  }
+}
+
+/* 모션 축소 요청 시 전환·반짝임을 끈다. 고정 바는 애니메이션만 빠지고 계속 보인다 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

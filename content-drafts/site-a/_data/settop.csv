@@ -1,0 +1,16 @@
+carrier,model,y3,y2,y1,no_contract,note,source
+KT,셋톱박스 A,3300,4400,6600,8800,임대료 5년 청구,product.kt.com·shop.kt.com
+KT,셋톱박스 3,4400,5500,7700,9900,임대료 5년 청구,product.kt.com·shop.kt.com
+KT,셋톱박스 4,6600,7700,9900,12100,,product.kt.com
+KT,셋톱박스 A2,7700,8800,11000,13200,,product.kt.com
+KT,올인원 사운드바,8800,11000,18500,22000,,product.kt.com
+SK,Smart 3,4400,5500,7700,9900,동일 장비당 5년 부과,bworld.co.kr
+SK,UHD,4400,5500,7700,9900,동일 장비당 5년 부과,bworld.co.kr
+SK,AI 스피커형,6600,7700,9900,12100,인터넷 미가입 시 이용 불가,bworld.co.kr
+SK,AI 5,7700,8800,11000,13200,셋톱 케어 3년 5500,bworld.co.kr
+SK,AI 4 vision,8800,11000,16500,22000,,bworld.co.kr
+SK,AI Sound Max,8800,11000,16500,22000,인터넷 미가입 시 이용 불가,bworld.co.kr
+LG,UHD4,4400,5500,7700,9900,변경 시 납부기간 60개월 재시작,lguplus.com
+LG,UHD1·2·3,4400,5500,7700,9900,변경 시 납부기간 36개월 재시작,lguplus.com
+LG,고급형,3300,4400,6600,8800,HDMI 미지원 TV용,lguplus.com
+LG,사운드바 블랙,6600,9900,19800,22000,약정·납부기간 60개월,lguplus.com

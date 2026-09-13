@@ -1,0 +1,30 @@
+{
+  "name": "project34_internet",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sync": "node scripts/sync-content.mjs",
+    "dev": "next dev",
+    "dev:b": "node scripts/site.mjs B dev",
+    "build": "next build",
+    "build:b": "node scripts/site.mjs B build",
+    "rules": "node scripts/rules-audit.mjs",
+    "check": "next build && node scripts/rules-audit.mjs",
+    "check:b": "node scripts/site.mjs B check"
+  },
+  "dependencies": {
+    "next": "^16.2.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "postcss": "^8.5.28",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5"
+  }
+}
