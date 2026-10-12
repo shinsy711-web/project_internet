@@ -5,11 +5,15 @@ import { autoRelated } from '@/lib/links'
 import { suggestedFile } from '@/lib/manuscripts'
 import type { PageDef, SectionDef, SectionType } from '@/lib/pages'
 import { buildTable, tableFor, type BuiltTable, type TableDef } from '@/lib/tables'
-import { CTA_LABEL, eyebrowOf, formatDate, isPage, linksOf, pageByPath } from '@/lib/site'
+import { CTA_LABEL, eyebrowOf, formatDate, isPage, kickerOf, linksOf, pageByPath } from '@/lib/site'
 import CtaDock from './CtaDock'
 import ExpiryCalc from './ExpiryCalc'
+import LeadDialog from './LeadDialog'
 import LeadForm from './LeadForm'
+import Mascot from './Mascot'
 import PenaltyCalc from './PenaltyCalc'
+import PrivacyDialog from './PrivacyDialog'
+import QuickMenu from './QuickMenu'
 import Related from './Related'
 
 /**
@@ -175,7 +179,7 @@ function One({ b }: { b: Block }) {
             <li key={j}>
               <p className="steps-t">
                 <span className="steps-no" aria-hidden="true">
-                  Step {j + 1}
+                  STEP {String(j + 1).padStart(2, '0')}
                 </span>
                 <span>
                   <Spans spans={it} />
@@ -219,23 +223,42 @@ function FaqBlocks({ blocks }: { blocks: Block[] }) {
 
 // ── 공통 조각 ─────────────────────────────────────────────
 
-/** 히어로 장식 그래픽 — 글자·수치를 넣지 않는다(규칙 37) */
+/** 히어로 장식 그래픽 — 겹친 요금 카드 두 장 + 신호 배지. 글자·수치를 넣지 않는다(규칙 37) */
 const HeroArt = () => (
-  <svg aria-hidden="true" viewBox="0 0 320 260" className="hero-art">
-    <rect x="18" y="26" width="284" height="208" rx="22" fill="var(--color-surface)" stroke="var(--color-accent-line)" strokeWidth="2" />
-    {[0, 1, 2].map((i) => (
-      <g key={i} transform={`translate(42 ${58 + i * 56})`}>
-        <rect width="236" height="40" rx="12" fill={i === 1 ? 'var(--color-accent-soft)' : 'var(--color-surface-2)'} />
-        <circle cx="22" cy="20" r="9" fill={i === 1 ? 'var(--color-cta)' : 'var(--color-line-strong)'} />
-        <rect x="42" y="14" width={[88, 120, 70][i]} height="12" rx="6" fill={i === 1 ? 'var(--color-accent-line)' : 'var(--color-line)'} />
-        <rect x="182" y="12" width="40" height="16" rx="8" fill={i === 1 ? 'var(--color-cta)' : 'var(--color-line)'} />
-      </g>
-    ))}
-    <g transform="translate(250 22)">
-      <circle r="26" fill="var(--color-cta)" />
-      <path d="M-12 -2a17 17 0 0 1 24 0M-7 4a9.5 9.5 0 0 1 14 0" fill="none" stroke="var(--color-cta-ink)" strokeWidth="3" strokeLinecap="round" />
-      <circle cy="10" r="3" fill="var(--color-cta-ink)" />
+  <svg aria-hidden="true" viewBox="0 0 360 300" className="hero-art">
+    <defs>
+      <linearGradient id="hero-grad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stopColor="#1d4ed8" />
+        <stop offset="1" stopColor="#3b82f6" />
+      </linearGradient>
+      <linearGradient id="hero-card" x1="0" y1="0" x2="0.4" y2="1">
+        <stop offset="0.35" stopColor="#ffffff" />
+        <stop offset="1" stopColor="#e8f0ff" />
+      </linearGradient>
+    </defs>
+    {/* 뒤 카드 */}
+    <g opacity="0.9">
+      <rect x="78" y="18" width="252" height="150" rx="22" fill="var(--color-surface)" stroke="var(--color-line)" strokeWidth="1.5" />
+      <circle cx="112" cy="52" r="12" fill="var(--color-surface-2)" />
+      <rect x="100" y="80" width="84" height="10" rx="5" fill="var(--color-line)" />
+      <rect x="100" y="100" width="130" height="16" rx="7" fill="var(--color-line-strong)" />
     </g>
+    {/* 앞 카드 */}
+    <rect x="22" y="78" width="292" height="200" rx="24" fill="url(#hero-card)" stroke="var(--color-accent-line)" strokeWidth="1.5" />
+    <circle cx="60" cy="116" r="15" fill="var(--color-accent-soft)" />
+    <path d="M52.5 115a10.5 10.5 0 0 1 15 0M56 119a5.5 5.5 0 0 1 8 0" fill="none" stroke="var(--color-cta)" strokeWidth="2.2" strokeLinecap="round" />
+    <circle cx="60" cy="123" r="1.8" fill="var(--color-cta)" />
+    <rect x="218" y="104" width="58" height="22" rx="11" fill="url(#hero-grad)" />
+    <rect x="44" y="146" width="96" height="10" rx="5" fill="var(--color-line-strong)" />
+    <rect x="44" y="166" width="168" height="22" rx="8" fill="var(--color-ink)" />
+    <rect x="44" y="198" width="124" height="8" rx="4" fill="var(--color-line)" />
+    <rect x="40" y="220" width="256" height="40" rx="13" fill="url(#hero-grad)" />
+    <rect x="58" y="236" width="66" height="8" rx="4" fill="#ffffff" opacity="0.55" />
+    <rect x="236" y="232" width="44" height="16" rx="8" fill="#ffffff" />
+    {/* 신호 배지 */}
+    <circle cx="316" cy="84" r="30" fill="url(#hero-grad)" />
+    <path d="M303 83a18 18 0 0 1 26 0M308.5 89a10 10 0 0 1 15 0" fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" />
+    <circle cx="316" cy="95" r="3" fill="#ffffff" />
   </svg>
 )
 
@@ -342,7 +365,7 @@ function DocRelated({ page, s }: { page: PageDef; s: DocSection }) {
   return (
     <section id="related">
       <div className="container">
-        <h2>{s.heading}</h2>
+        <h2 data-kicker={kickerOf('관련문서')}>{s.heading}</h2>
         <ul className="related-list">
           {items.map((it, j) => (
             <li key={j}>
@@ -372,9 +395,10 @@ function DocSectionView({ page, s, id, index }: { page: PageDef; s: DocSection; 
   return (
     <section id={id} className={index % 2 === 0 ? 'is-alt' : undefined} data-sk={has ? undefined : 'true'}>
       <div className="container">
-        <h2>{s.heading}</h2>
+        <h2 data-kicker={kickerOf(s.type)}>{s.heading}</h2>
         {!has ? <SkBody type={s.type} /> : s.type === 'FAQ' ? <FaqBlocks blocks={s.blocks} /> : <Blocks blocks={s.blocks} />}
         {s.type === '도구' && TOOL_WIDGETS[page.path]}
+        {s.type === 'CTA' && <Mascot pose="wave" className="apply-mascot" />}
         {s.type === 'CTA' && <LeadForm />}
       </div>
     </section>
@@ -536,7 +560,7 @@ function SkBody({ type, memo }: { type: SectionType; memo?: string }) {
               <li key={i}>
                 <p className="steps-t">
                   <span className="steps-no" aria-hidden="true">
-                    Step {i + 1}
+                    STEP {String(i + 1).padStart(2, '0')}
                   </span>
                   <Bar inline w="11rem" />
                 </p>
@@ -636,7 +660,9 @@ function SheetSectionView({ page, s, id, index }: { page: PageDef; s: SectionDef
   return (
     <section id={id} className={index % 2 === 0 ? 'is-alt' : undefined} data-sk="true" data-note={noteOf(index, s, def, built)}>
       <div className="container">
-        <h2 data-memo={memo || undefined}>{s.h2}</h2>
+        <h2 data-memo={memo || undefined} data-kicker={kickerOf(s.type)}>
+          {s.h2}
+        </h2>
         {body}
       </div>
     </section>
@@ -753,7 +779,19 @@ export default function PageView({ page, doc, trail }: { page: PageDef; doc: Doc
                 <Stamp updated={doc?.updated ?? ''} />
               </div>
               <div className="hero-side">
-                <HeroArt />
+                {/* 홈 = 기본, 속도 = 땅 파기, 고장 = 길 잃음. 나머지는 요금 카드 그래픽 위로 빼꼼 */}
+                {page.path === '/' ? (
+                  <Mascot pose="basic" className="hero-mascot" eager />
+                ) : page.path.startsWith('/speed/') ? (
+                  <Mascot pose="dig" className="hero-mascot" eager />
+                ) : page.path.startsWith('/trouble/') ? (
+                  <Mascot pose="lost" className="hero-mascot is-framed" eager />
+                ) : (
+                  <div className="hero-art-wrap">
+                    <HeroArt />
+                    <Mascot pose="peek" className="hero-art-peek" eager />
+                  </div>
+                )}
               </div>
             </div>
             <Toc items={rows.filter((r) => r.type !== '관련문서').map((r) => ({ id: r.id, label: r.label }))} />
@@ -769,6 +807,10 @@ export default function PageView({ page, doc, trail }: { page: PageDef; doc: Doc
         )}
       </article>
       <CtaDock />
+      <QuickMenu />
+      {/* 모달 — article 밖. 상담 링크(#apply)가 LeadDialog 를, 폼의 동의 "보기" 가 PrivacyDialog 를 연다 */}
+      <LeadDialog />
+      <PrivacyDialog />
     </>
   )
 }

@@ -10,12 +10,16 @@
  */
 import { isReady, loadDoc } from './content'
 import { manuscriptFor, manuscripts } from './manuscripts'
-import { PAGES, type PageDef } from './pages'
+import { PAGES, type PageDef, type SectionType } from './pages'
 import { SITE_KEY, type SiteKey } from './siteKey'
 
 export { SITE_KEY, type SiteKey }
 
+export type QuickIcon = 'chat' | 'chart' | 'calc' | 'speed' | 'home' | 'gift' | 'tv' | 'switch'
+
 type SiteConfig = {
+  /** 오른쪽 빠른 메뉴 (components/QuickMenu.tsx). `#apply` 는 모든 페이지에 있다. 경로는 공개 페이지만 나간다 */
+  quick: [href: string, label: string, icon: QuickIcon][]
   /** 브랜드명 — 미정. title 접미사. 비어 있으면 og:site_name · Organization 이 빠지고 감사 스크립트가 배포를 막는다 */
   name: string
   /** 푸터 필수 고지 — 미정. 비어 있으면 감사 스크립트가 배포를 막는다 */
@@ -28,9 +32,16 @@ type SiteConfig = {
 
 const CONFIG: Record<SiteKey, SiteConfig> = {
   A: {
-    name: '',
+    name: '잘깔다',
     disclaimer: '',
     ctaDockText: '',
+    quick: [
+      ['#apply', '상담 신청', 'chat'],
+      ['/price/', '요금 비교', 'chart'],
+      ['/tools/penalty/', '위약금 계산기', 'calc'],
+      ['/speed/test/', '속도측정', 'speed'],
+      ['/install/cost/', '설치비 비교', 'home'],
+    ],
     header: [
       ['/kt/', 'KT'],
       ['/sk/', 'SK'],
@@ -54,6 +65,12 @@ const CONFIG: Record<SiteKey, SiteConfig> = {
     name: '',
     disclaimer: '',
     ctaDockText: '',
+    quick: [
+      ['#apply', '상담 신청', 'chat'],
+      ['/gift/', '사은품', 'gift'],
+      ['/tv-cash/', 'TV 결합 혜택', 'tv'],
+      ['/switch-cash/', '통신사 변경 혜택', 'switch'],
+    ],
     header: [
       ['/', '현금 지원'],
       ['/gift/', '사은품'],
@@ -68,6 +85,8 @@ const CONFIG: Record<SiteKey, SiteConfig> = {
 const cfg = CONFIG[SITE_KEY]
 
 export const SITE_NAME = cfg.name
+/** <title> 끝에 ` | 브랜드명`. og:title 에는 붙이지 않는다(og:site_name 이 따로 있다) */
+export const brandTitle = (title: string) => (SITE_NAME ? `${title} | ${SITE_NAME}` : title)
 export const DISCLAIMER = cfg.disclaimer
 export const CTA_DOCK_TEXT = cfg.ctaDockText
 
@@ -77,10 +96,17 @@ export const CTA_DOCK_TEXT = cfg.ctaDockText
  * 비어 있으면 localhost 로 남고 감사 스크립트가 배포를 막는다.
  */
 const SITE_URL_ENV = SITE_KEY === 'B' ? process.env.NEXT_PUBLIC_SITE_URL_B : process.env.NEXT_PUBLIC_SITE_URL
-export const SITE_URL = (SITE_URL_ENV || 'http://localhost:3000').replace(/\/$/, '')
+/** Vercel 빌드면 프로젝트의 프로덕션 도메인(커스텀 도메인을 붙이면 그 도메인)을 쓴다 — 변수를 안 넣어도 canonical 이 localhost 로 나가지 않게 */
+const VERCEL_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : ''
+export const SITE_URL = (SITE_URL_ENV || VERCEL_URL || 'http://localhost:3000').replace(/\/$/, '')
 
-/** OG 는 JPEG 1200×630. 파일을 받으면 채운다. 비어 있으면 og:image 를 넣지 않는다 */
-export const OG_IMAGE = ''
+/** OG 1200×630 (public/og.png — 브랜드명이 들어간 그림이라 A 만). 비어 있으면 og:image · Article.image 를 넣지 않는다 */
+export const OG_IMAGE = SITE_KEY === 'A' ? '/og.png' : ''
+/** Organization.logo · 파비콘 (public/icon.png 512×512 · apple-icon.png) */
+export const LOGO_IMAGE = '/icon.png'
+
+/** 프런트매터 날짜(YYYY-MM-DD)에 한국 시간대를 붙인다 — 구조화 데이터 · og article 시각은 시간대가 있어야 한다 */
+export const isoDate = (d: string) => (/^\d{4}-\d{2}-\d{2}$/.test(d) ? `${d}T00:00:00+09:00` : d)
 
 /** 검색엔진 소유확인 · GA — 값이 없으면 태그 자체를 렌더하지 않는다 (플레이스홀더 금지) */
 export const NAVER_VERIFICATION = process.env.NEXT_PUBLIC_NAVER_VERIFICATION || ''
@@ -92,15 +118,31 @@ export const OPERATOR = { name: '', email: '' }
 
 /**
  * 상담 폼 — project21_db 공용 수집 서버(`/api/submit?api_key=`, project31 등과 같은 서버). 키는 사이트마다 sites 테이블에 등록해 받는다.
- *   collector  개인정보 수집 주체(운영 법인명) · recipient  제3자 제공받는 자 상호 — 동의 문구에 그대로 나간다
- * 엔드포인트·수집 주체·제공받는 자 중 하나라도 비면 폼은 "준비 중". 플레이스홀더 금지.
+ *   collector  개인정보 수집 주체(운영 법인명) — 동의 문구에 그대로 나간다
+ *   thirdParty false = 운영자가 직접 상담한다(제3자 제공 없음 — 백메가 100mb.kr 방식). 폼 동의 항목 · 동의서 · 처리방침에서 제3자 제공이 빠진다.
+ *              ⚠️ 접수한 번호를 다른 업체(판매점 등)에 넘기면 반드시 true + recipient(제공받는 자 상호). 동의 없이 넘기면 개인정보 보호법 위반이다.
+ * 엔드포인트·수집 주체(+ thirdParty 면 제공받는 자) 중 하나라도 비면 폼은 "준비 중". 플레이스홀더 금지.
  */
-export const LEAD = { collector: '', recipient: '', category: '인터넷' }
+export const LEAD = { collector: '', thirdParty: false, recipient: '', category: '인터넷' }
 const DB_SUBMIT_URL = process.env.NEXT_PUBLIC_DB_SUBMIT_URL || ''
 const DB_API_KEY = (SITE_KEY === 'B' ? process.env.NEXT_PUBLIC_DB_API_KEY_B : process.env.NEXT_PUBLIC_DB_API_KEY) || ''
 export const LEAD_ENDPOINT = DB_SUBMIT_URL && DB_API_KEY ? `${DB_SUBMIT_URL}?api_key=${encodeURIComponent(DB_API_KEY)}` : ''
-export const FORM_READY = Boolean(LEAD_ENDPOINT && LEAD.collector && LEAD.recipient)
+export const FORM_READY = Boolean(LEAD_ENDPOINT && LEAD.collector && (!LEAD.thirdParty || LEAD.recipient))
 export const CTA_LABEL = '상담 신청하기'
+
+/**
+ * 개인정보 처리방침(app/privacy/page.tsx) — 확인된 값만. 빈 값은 자리 막대로 나가고 페이지가 noindex 로 남는다.
+ *   officer     개인정보 보호책임자 성명·직책 · contact  책임자 연락처(전화 또는 이메일)
+ *   processors  처리위탁 [수탁자 상호, 위탁 업무] — null 은 미확정, [] 는 "위탁 없음" 으로 나간다
+ *   effective   시행일 YYYY-MM-DD
+ */
+export const PRIVACY: { officer: string; contact: string; processors: [name: string, task: string][] | null; effective: string } = {
+  officer: '',
+  contact: '',
+  processors: null,
+  effective: '',
+}
+export const PRIVACY_PATH = '/privacy/'
 
 // ── 트리 ─────────────────────────────────────────────────
 
@@ -170,6 +212,28 @@ const linkable = (path: string) => isPage(path) && isReady(loadDoc(path))
 
 export const HEADER_NAV = cfg.header.filter(([p]) => linkable(p)).map(([path, label]) => ({ path, label }))
 
+export const QUICK_MENU = cfg.quick.filter(([href]) => href.startsWith('#') || linkable(href)).map(([href, label, icon]) => ({ href, label, icon }))
+
+/** 섹션 h2 위 영문 키커 — h2 의 data-kicker 속성을 CSS 의사요소로 그린다(DOM 글자가 아니라 본문·감사 스크립트에 안 섞인다) */
+const KICKER: Record<SectionType, string> = {
+  정의: 'OVERVIEW',
+  '정의+상세': 'OVERVIEW',
+  비교표: 'COMPARE',
+  상세: 'IN DETAIL',
+  '상세 h3': 'IN DETAIL',
+  '목록 UL': 'KEY POINTS',
+  '목록 OL': 'EASY STEPS',
+  주의사항: 'CHECK POINT',
+  신뢰: 'TRUST',
+  도구: 'TOOLS',
+  'Q&A': 'Q&A',
+  FAQ: 'FAQ',
+  전환: 'NEXT STEP',
+  CTA: 'FREE CONSULTING',
+  관련문서: 'MORE GUIDES',
+}
+export const kickerOf = (type: SectionType) => KICKER[type]
+
 const listed = new Set(cfg.groups.flatMap(([, paths]) => paths))
 const leftovers = SITE_PAGES.filter((p) => !listed.has(p.path) && linkable(p.path))
 
@@ -205,9 +269,19 @@ const EYEBROW: Record<SiteKey, Record<string, string>> = {
 export const eyebrowOf = (path: string) => EYEBROW[SITE_KEY][path.split('/')[1] ?? ''] ?? ''
 
 /** openGraph — 규칙 6. 페이지에서 정의하면 루트 값이 통째로 덮이므로 type·locale 을 여기서 전부 채운다 */
-export function og(title: string, description: string, path: string) {
+export function og(title: string, description: string, path: string, article?: { published?: string; modified?: string }) {
+  const base = ogBase(title, description, path)
+  if (!article) return { ...base, type: 'website' as const }
   return {
-    type: 'website' as const,
+    ...base,
+    type: 'article' as const,
+    ...(article.published ? { publishedTime: isoDate(article.published) } : {}),
+    ...(article.modified ? { modifiedTime: isoDate(article.modified) } : {}),
+  }
+}
+
+function ogBase(title: string, description: string, path: string) {
+  return {
     locale: 'ko_KR',
     title,
     description,

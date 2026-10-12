@@ -22,7 +22,8 @@ if (!existsSync(OUT)) {
 }
 
 // Next 16 + output:'export' 는 404 를 404.html · 404/ · _not-found/ 로 낸다
-const SKIP_DIRS = new Set(['_next', '404', '_not-found'])
+// privacy — 개인정보 처리방침(app/privacy). 원고 페이지가 아니라 히어로·#apply·내부링크 규칙 대상이 아니다
+const SKIP_DIRS = new Set(['_next', '404', '_not-found', 'privacy'])
 
 function collect(dir, acc = []) {
   for (const name of readdirSync(dir)) {

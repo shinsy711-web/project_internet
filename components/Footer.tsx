@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { DISCLAIMER, FOOTER_GROUPS, OPERATOR, SITE_NAME } from '@/lib/site'
+import { DISCLAIMER, FOOTER_GROUPS, OPERATOR, PRIVACY_PATH, SITE_NAME } from '@/lib/site'
 import BrandMark from './BrandMark'
 
 /**
@@ -77,6 +77,12 @@ export default function Footer() {
               )}
             </p>
           )}
+
+          <p className="mt-5 text-[0.8rem]">
+            <Link href={PRIVACY_PATH} className="font-extrabold text-ink underline underline-offset-2 transition-colors hover:text-accent">
+              개인정보 처리방침
+            </Link>
+          </p>
 
           <p className="mt-4 text-[0.75rem] text-ink-soft">© 2026 {SITE_NAME}</p>
         </div>

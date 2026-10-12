@@ -73,13 +73,19 @@ B 는 **금액(원) 표기 금지**(KAIT 가이드라인 위반 표시·광고).
 
 ## 디자인
 
-project32 토큰 그대로(stone + 밝은 초록, 85rem). `accent`(글자 #15803d)와 `cta`(버튼 면 #22c55e + 글자 #052e16)를 합치지 말 것.
+파랑 브랜드 + 쿨 그레이 중립, 85rem (2026-09-14 project32 초록 토큰에서 교체 — 카드·배지·그라데이션 버튼 레퍼런스 느낌). `accent`(글자 #1d4ed8)와 `cta`(버튼 면 #2563eb + 흰 글자, 면은 `--grad-cta`)를 합치지 말 것.
 본문은 마크다운이라 `globals.css` 가 선택자로 잡는다. 한글 이탤릭은 기울이지 않고 색으로만.
+- 섹션 h2 위 영문 키커 = `data-kicker`(lib/site.ts `kickerOf`) 를 의사요소로 — DOM 글자가 아니다. 절차(ol.steps) 섹션은 어두운 패널, `#apply` 는 파랑 패널 + 오른쪽 폼.
+- 오른쪽 빠른 메뉴 `components/QuickMenu.tsx` — `CONFIG.quick`, 공개 페이지만, article 밖.
+- 상담 모달 `LeadDialog`(+`LeadDialogClient`) — 페이지의 `a[href="#apply"]` 클릭을 가로채 네이티브 `<dialog>` 로 연다(목차 링크 제외, JS 없으면 #apply 로 스크롤). #apply 섹션 카드와 같은 `LeadFormClient`.
+- 동의서 모달 `PrivacyDialog` — 폼 "보기" 가 연다. **폼이 실제로 보내는 필드만 적는다**(휴대폰 · 희망 조건 칩 · 신청 페이지) — 필드를 바꾸면 같이 고칠 것. 모달·동의서엔 h1~h4 · table · dl · ul 금지(감사). 법무 검토 전.
+- `.container` 가 레이어 밖이라 구역별 container 여백·패널 규칙도 레이어 밖에 둔다(레이어 안이면 안 먹는다).
+- 레퍼런스의 후기 카드 · 현금 금액 카드 · 사은품 탭은 넣지 않았다 — 실제 후기·검증 금액이 없고, 금액은 운영규칙 10 · 사이트 B 금지.
 
 ## 배포 전 미정
 
-1. 사이트 A · B 브랜드명 · 푸터 고지문 (`lib/site.ts` CONFIG) · 도메인 — **A `NEXT_PUBLIC_SITE_URL`, B `NEXT_PUBLIC_SITE_URL_B` 로 따로.** B 빌드도 같은 .env.local 을 읽어서, 하나로 두면 B 의 canonical·sitemap·robots 가 A 도메인을 가리킨다. 둘 다 없으면 localhost 로 남아 감사가 막는다. OG 이미지(`OG_IMAGE`)도 비어 있어 og:image · Article.image 가 없다
-2. 상담 폼 켜기 — 제출 로직은 완성(`components/LeadFormClient.tsx` → project21_db `/api/submit`, project31 과 같은 서버). 남은 것: `.env.local` 에 `NEXT_PUBLIC_DB_SUBMIT_URL` + `NEXT_PUBLIC_DB_API_KEY`(A) · `NEXT_PUBLIC_DB_API_KEY_B`(B) — project21 sites 테이블에 사이트를 등록해 받는다. `lib/site.ts` `LEAD.collector`(수집 주체) · `LEAD.recipient`(제3자 제공받는 자). 넷이 다 차야 `FORM_READY`. 처리방침 페이지 없음. **키 확인용으로 실제 키에 POST 금지**(빈 본문도 저장·디스코드 알림)
+1. 사이트 B 브랜드명(A 는 `잘깔다` 확정) · A · B 푸터 고지문 (`lib/site.ts` CONFIG) · 도메인 — **A `NEXT_PUBLIC_SITE_URL`, B `NEXT_PUBLIC_SITE_URL_B` 로 따로.** B 빌드도 같은 .env.local 을 읽어서, 하나로 두면 B 의 canonical·sitemap·robots 가 A 도메인을 가리킨다. 둘 다 없으면 Vercel 빌드는 `VERCEL_PROJECT_PRODUCTION_URL` 을, 로컬은 localhost 를 쓴다(감사가 막는다). OG 이미지는 A 만 `public/og.png`(브랜드명이 들어간 그림 — B 는 브랜드 확정 후), 로고·파비콘은 `public/icon.png` · `apple-icon.png`. 마스코트는 `components/Mascot.tsx` + `public/img/`
+2. 상담 폼 켜기 — 제출 로직은 완성(`components/LeadFormClient.tsx` → project21_db `/api/submit`, project31 과 같은 서버). 남은 것: `.env.local` 에 `NEXT_PUBLIC_DB_SUBMIT_URL` + `NEXT_PUBLIC_DB_API_KEY`(A) · `NEXT_PUBLIC_DB_API_KEY_B`(B) — project21 sites 테이블에 사이트를 등록해 받는다. `lib/site.ts` `LEAD.collector`(수집 주체). 셋이 다 차야 `FORM_READY`. **제3자 제공은 꺼 둠**(`LEAD.thirdParty: false` — 운영자가 직접 상담, 백메가 방식. 폼 동의는 수집·이용 + 만 14세) — 접수 번호를 다른 업체에 넘기게 되면 `true` + `LEAD.recipient` 로 켠다(동의 항목 · 동의서 · 처리방침이 같이 바뀐다). 처리방침은 `app/privacy/page.tsx`(A·B 공통, 푸터·동의서 모달이 링크, 감사 제외) — `lib/site.ts` `PRIVACY`(보호책임자 · 연락처 · 수탁자 · 시행일)가 비어 있으면 자리 막대 + noindex. 법무 검토 전. **키 확인용으로 실제 키에 POST 금지**(빈 본문도 저장·디스코드 알림)
 3. 원고 속 요금 재확인(원고 README: 2026-09-13 수집, 발행 전 재확인) · plans.csv 연동
 4. 계산기 — /tools/penalty/ · /tools/expiry/ 는 완성(`lib/calc.ts` 식 + `PenaltyCalc` · `ExpiryCalc`, PageView `TOOL_WIDGETS` 가 원고 도구 섹션 아래에 붙인다). KT 180일 식은 KT 약관 주요설명서(2025-07)로 확인, SK·LG 90/180/240일은 원고 기준(LG 예시로 검산). /tools/coverage/ 는 주소 조회 API 가 없어 위젯 없음. /tools/bill/ 은 원고 없음. 속도측정 위젯도 "준비 중"
 5. 원고 링크 대상 미발행: /tools/bill/ · /guide/scam/ · /guide/precon/ · /bundle/card/ · /bundle/mobile/ · /vs/kt-sk/ · /vs/kt-lg/ (+ TV 계열 원고 대기). B 원고 install-cash · switch-cash 가 A 경로(/install/cost/ · /switch/)를 상대 링크로 건다 — B 에 없는 경로라 일반 텍스트로 나간다(PageView `Inline`). A 로 보내려면 절대 URL 필요(도메인 확정 후)

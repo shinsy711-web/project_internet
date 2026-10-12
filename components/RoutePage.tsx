@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { isReady, loadDoc } from '@/lib/content'
 import { pageGraph } from '@/lib/jsonld'
-import { og, pageByPath, trailOf } from '@/lib/site'
+import { brandTitle, og, pageByPath, trailOf } from '@/lib/site'
 import JsonLd from './JsonLd'
 import PageView from './PageView'
 
@@ -19,10 +19,11 @@ export function metadataFor(path: string): Metadata {
   const description = doc?.description || `${page.h1} — 원고 대기 중인 페이지입니다.`
 
   return {
-    title,
+    title: brandTitle(title),
     description,
     alternates: { canonical: path },
-    openGraph: og(title, description, path),
+    // 홈은 website, 원고가 들어간 하위 페이지는 article(발행·수정 시각 포함)
+    openGraph: og(title, description, path, doc && isReady(doc) && path !== '/' ? { published: doc.published, modified: doc.updated } : undefined),
     ...(isReady(doc) ? {} : { robots: { index: false, follow: true } }),
   }
 }

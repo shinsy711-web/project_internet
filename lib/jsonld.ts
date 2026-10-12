@@ -6,14 +6,14 @@
  *   - 값은 화면 텍스트와 일치 (규칙 31): 브레드크럼 이름 = 화면 브레드크럼 글자, Article.headline = 화면 h1.
  *   - 주입은 components/JsonLd.tsx 의 <script> 로만. next/script 는 서버 HTML 에 태그가 안 나간다.
  */
-import { OG_IMAGE, SITE_NAME, SITE_URL, absUrl } from './site'
+import { LOGO_IMAGE, OG_IMAGE, SITE_NAME, SITE_URL, absUrl, isoDate } from './site'
 
 const orgId = `${SITE_URL}/#organization`
 
 /** 루트 레이아웃에서 1회. 브랜드명이 없으면 넣지 않는다 */
 export function orgGraph() {
   if (!SITE_NAME) return null
-  return { '@context': 'https://schema.org', '@type': 'Organization', '@id': orgId, name: SITE_NAME, url: `${SITE_URL}/` }
+  return { '@context': 'https://schema.org', '@type': 'Organization', '@id': orgId, name: SITE_NAME, url: `${SITE_URL}/`, logo: absUrl(LOGO_IMAGE) }
 }
 
 export function pageGraph(opts: {
@@ -41,9 +41,9 @@ export function pageGraph(opts: {
       description: a.description,
       inLanguage: 'ko-KR',
       mainEntityOfPage: url,
-      ...(a.published ? { datePublished: a.published } : {}),
-      ...(a.modified ? { dateModified: a.modified } : {}),
-      ...(OG_IMAGE ? { image: OG_IMAGE } : {}),
+      ...(a.published ? { datePublished: isoDate(a.published) } : {}),
+      ...(a.modified ? { dateModified: isoDate(a.modified) } : {}),
+      ...(OG_IMAGE ? { image: absUrl(OG_IMAGE) } : {}),
       ...(SITE_NAME ? { author: { '@id': orgId }, publisher: { '@id': orgId } } : {}),
     })
   }

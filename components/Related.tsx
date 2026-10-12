@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { childrenOf, pageByPath, parentOf } from '@/lib/site'
+import { childrenOf, kickerOf, pageByPath, parentOf } from '@/lib/site'
 
 /**
  * 관련문서 섹션 — 트리에서 자동 생성.
@@ -20,7 +20,7 @@ export default function Related({ path, note, heading = '함께 보면 좋은 �
   return (
     <section id="related" data-note={note}>
       <div className="container">
-        <h2>{heading}</h2>
+        <h2 data-kicker={kickerOf('관련문서')}>{heading}</h2>
         <ul className="related">
           {items.map((p) => (
             <li key={p.path}>
