@@ -19,6 +19,8 @@ export const metadata: Metadata = {
     shortcut: '/favicon.ico',
     apple: '/apple-icon.png',
   },
+  // 구글 애드센스 사이트 확인 — 사이트 A(jalkkalda.kr)만. B 는 별도 도메인이라 승인받을 때 따로 넣는다
+  ...(SITE_KEY === 'A' ? { other: { 'google-adsense-account': 'ca-pub-5378247298190063' } } : {}),
   verification: {
     ...(NAVER_VERIFICATION ? { other: { 'naver-site-verification': NAVER_VERIFICATION } } : {}),
     ...(GOOGLE_VERIFICATION ? { google: GOOGLE_VERIFICATION } : {}),
