@@ -90,10 +90,13 @@ export default function LeadFormClient({ endpoint, ready, label, category, third
         }),
       })
       if (!res.ok) return fail('전송에 실패했습니다. 잠시 후 다시 시도해 주세요.')
+      const done = '상담 신청이 접수되었습니다. 담당자가 곧 연락드리겠습니다.'
       setStatus('done')
-      setMessage('상담 신청이 접수되었습니다. 담당자가 곧 연락드리겠습니다.')
+      setMessage(done)
       setPhone('')
       setAgree(DEFAULT_AGREE)
+      // 접수 완료 알림 — 폼 아래 문구는 놓치기 쉬워서 브라우저 알림창으로도 한 번 띄운다
+      window.alert(done)
     } catch {
       fail('네트워크 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.')
     }
