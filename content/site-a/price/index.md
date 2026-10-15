@@ -1,8 +1,8 @@
 ---
 url: /price/
-title: 인터넷 요금 비교 | 3사 속도별 월요금
+title: 인터넷 요금 비교 | 속도·약정별
 h1: 인터넷 요금 비교
-description: KT·SK·LG 인터넷 요금을 속도별·약정별로 비교합니다. 설치비와 장비 임대료를 포함한 실제 부담액 기준입니다.
+description: 인터넷 요금 비교 — KT·SK·LG 3사를 100M~10G 속도별, 3년~무약정 약정별로 정리하고 설치비·임대료·결합할인까지 반영했습니다.
 keywords: [인터넷요금비교, 인터넷요금, 인터넷요금제, 인터넷비용, 인터넷가격비교, 통신요금비교]
 updated: 2026-09-13
 schema: [Article, BreadcrumbList, Organization]

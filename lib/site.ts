@@ -9,7 +9,7 @@
  * ⚠️ lib/manuscripts.ts(node:fs)를 import 한다 — 서버 전용. 클라이언트 컴포넌트는 props 로 받을 것(Header 참고).
  */
 import { isReady, loadDoc } from './content'
-import { manuscriptFor, manuscripts } from './manuscripts'
+import { manuscriptFor, manuscripts, siteAUrlSet } from './manuscripts'
 import { PAGES, type PageDef, type SectionType } from './pages'
 import { SITE_KEY, type SiteKey } from './siteKey'
 
@@ -20,6 +20,8 @@ export type QuickIcon = 'chat' | 'chart' | 'calc' | 'speed' | 'home' | 'gift' | 
 type SiteConfig = {
   /** 오른쪽 빠른 메뉴 (components/QuickMenu.tsx). `#apply` 는 모든 페이지에 있다. 경로는 공개 페이지만 나간다 */
   quick: [href: string, label: string, icon: QuickIcon][]
+  /** 확정 도메인(https://, 끝 슬래시 없이) — canonical · sitemap · robots · OG · 구조화 데이터의 기준. 비어 있으면 환경변수/Vercel 주소 */
+  domain: string
   /** 브랜드명 — 미정. title 접미사. 비어 있으면 og:site_name · Organization 이 빠지고 감사 스크립트가 배포를 막는다 */
   name: string
   /** 푸터 필수 고지 — 미정. 비어 있으면 감사 스크립트가 배포를 막는다 */
@@ -32,6 +34,8 @@ type SiteConfig = {
 
 const CONFIG: Record<SiteKey, SiteConfig> = {
   A: {
+    // 2026-10-15 확정. jalkkalda.com · www 등 나머지 주소는 vercel.json 에서 301 로 여기로 보낸다
+    domain: 'https://jalkkalda.kr',
     name: '잘깔다',
     disclaimer: '',
     ctaDockText: '',
@@ -62,6 +66,7 @@ const CONFIG: Record<SiteKey, SiteConfig> = {
     ],
   },
   B: {
+    domain: '',
     name: '',
     disclaimer: '',
     ctaDockText: '',
@@ -91,14 +96,17 @@ export const DISCLAIMER = cfg.disclaimer
 export const CTA_DOCK_TEXT = cfg.ctaDockText
 
 /**
- * 도메인 — 미정. A 는 NEXT_PUBLIC_SITE_URL, B 는 NEXT_PUBLIC_SITE_URL_B.
+ * 도메인 — 우선순위: 환경변수(A NEXT_PUBLIC_SITE_URL · B NEXT_PUBLIC_SITE_URL_B) → CONFIG.domain → Vercel 프로덕션 주소 → localhost.
+ * A 는 jalkkalda.kr 로 확정(CONFIG.A.domain) — 공개값이라 코드에 둔다. 배포 환경변수가 없어도 canonical 이 틀어지지 않는다.
  * B 빌드(scripts/site.mjs)는 같은 .env.local 을 읽으므로 변수를 나누지 않으면 B 의 canonical·sitemap·robots 가 A 도메인을 가리킨다.
- * 비어 있으면 localhost 로 남고 감사 스크립트가 배포를 막는다.
+ * 다 비어 있으면 localhost 로 남고 감사 스크립트가 배포를 막는다.
  */
 const SITE_URL_ENV = SITE_KEY === 'B' ? process.env.NEXT_PUBLIC_SITE_URL_B : process.env.NEXT_PUBLIC_SITE_URL
 /** Vercel 빌드면 프로젝트의 프로덕션 도메인(커스텀 도메인을 붙이면 그 도메인)을 쓴다 — 변수를 안 넣어도 canonical 이 localhost 로 나가지 않게 */
 const VERCEL_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : ''
-export const SITE_URL = (SITE_URL_ENV || VERCEL_URL || 'http://localhost:3000').replace(/\/$/, '')
+export const SITE_URL = (SITE_URL_ENV || cfg.domain || VERCEL_URL || 'http://localhost:3000').replace(/\/$/, '')
+/** 사이트 A(본진) 도메인 — B 원고가 A 경로를 링크할 때 절대 URL 로 보낸다 */
+export const SITE_A_URL = (process.env.NEXT_PUBLIC_SITE_URL || CONFIG.A.domain).replace(/\/$/, '')
 
 /** OG 1200×630 (public/og.png — 브랜드명이 들어간 그림이라 A 만). 비어 있으면 og:image · Article.image 를 넣지 않는다 */
 export const OG_IMAGE = SITE_KEY === 'A' ? '/og.png' : ''
@@ -113,8 +121,11 @@ export const NAVER_VERIFICATION = process.env.NEXT_PUBLIC_NAVER_VERIFICATION || 
 export const GOOGLE_VERIFICATION = process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || ''
 export const GA_ID = process.env.NEXT_PUBLIC_GA_ID || ''
 
+/** 운영 법인 = 개인정보 수집 주체(2026-10-15 확정). 동의서 · 처리방침 · 푸터가 같은 표기를 쓰도록 이 상수만 참조한다 — '(주)' 약칭 금지 */
+const COMPANY = '주식회사 와야미디어'
+
 /** 운영 주체 — 확인된 값만. 빈 값은 푸터에서 줄 자체가 빠진다 */
-export const OPERATOR = { name: '', email: '' }
+export const OPERATOR = { name: COMPANY, email: '' }
 
 /**
  * 상담 폼 — project21_db 공용 수집 서버(`/api/submit?api_key=`, project31 등과 같은 서버). 키는 사이트마다 sites 테이블에 등록해 받는다.
@@ -123,9 +134,15 @@ export const OPERATOR = { name: '', email: '' }
  *              ⚠️ 접수한 번호를 다른 업체(판매점 등)에 넘기면 반드시 true + recipient(제공받는 자 상호). 동의 없이 넘기면 개인정보 보호법 위반이다.
  * 엔드포인트·수집 주체(+ thirdParty 면 제공받는 자) 중 하나라도 비면 폼은 "준비 중". 플레이스홀더 금지.
  */
-export const LEAD = { collector: '', thirdParty: false, recipient: '', category: '인터넷' }
-const DB_SUBMIT_URL = process.env.NEXT_PUBLIC_DB_SUBMIT_URL || ''
-const DB_API_KEY = (SITE_KEY === 'B' ? process.env.NEXT_PUBLIC_DB_API_KEY_B : process.env.NEXT_PUBLIC_DB_API_KEY) || ''
+export const LEAD = { collector: COMPANY, thirdParty: false, recipient: '', category: '인터넷' }
+/**
+ * 접수 서버(project_db_bd) — 키는 브라우저 요청 주소에 그대로 실리는 공개값이라 코드에 둔다(환경변수가 있으면 그쪽이 이긴다).
+ * A 키 = DB 관리자 '인터넷' 업종 jalkkalda.kr (2026-10-15 등록). B 는 등록 전.
+ * ⚠️ 키 확인용으로 실제 키에 POST 하지 말 것 — 빈 본문도 저장되고 디스코드 알림이 간다.
+ */
+const DB_SUBMIT_URL = process.env.NEXT_PUBLIC_DB_SUBMIT_URL || 'https://project-db-bd.vercel.app/api/submit'
+const DB_API_KEY_DEFAULT: Record<SiteKey, string> = { A: '83072aae-c8e3-46e1-b95f-6a4ade83966e', B: '' }
+const DB_API_KEY = (SITE_KEY === 'B' ? process.env.NEXT_PUBLIC_DB_API_KEY_B : process.env.NEXT_PUBLIC_DB_API_KEY) || DB_API_KEY_DEFAULT[SITE_KEY]
 export const LEAD_ENDPOINT = DB_SUBMIT_URL && DB_API_KEY ? `${DB_SUBMIT_URL}?api_key=${encodeURIComponent(DB_API_KEY)}` : ''
 export const FORM_READY = Boolean(LEAD_ENDPOINT && LEAD.collector && (!LEAD.thirdParty || LEAD.recipient))
 export const CTA_LABEL = '상담 신청하기'
@@ -176,6 +193,12 @@ const byPath = new Map(SITE_PAGES.map((p) => [p.path, p]))
 
 export const pageByPath = (path: string) => byPath.get(path)
 export const isPage = (path: string) => byPath.has(path)
+/**
+ * 이 사이트에 없는 경로의 링크 대상. B 원고가 A 경로(/switch/ 등)를 걸면 A 도메인 절대 URL 로 보낸다.
+ * 그 밖에 없는 경로는 null — 호출부가 일반 텍스트로 떨군다(깨진 링크 금지).
+ */
+export const crossSiteHref = (path: string): string | null =>
+  SITE_KEY === 'B' && SITE_A_URL && siteAUrlSet().has(path) ? `${SITE_A_URL}${path}` : null
 export const absUrl = (path: string) => `${SITE_URL}${path}`
 
 /** 등록된 가장 가까운 조상. /tv/ 처럼 없는 중간 경로는 건너뛰고 홈에 붙는다 */

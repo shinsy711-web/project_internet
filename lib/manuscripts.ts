@@ -80,3 +80,16 @@ export function suggestedFile(path: string) {
   if (segs.length === 1) return SITE_KEY === 'B' ? `${SITE_DIR_NAME}/${segs[0]}.md` : `${SITE_DIR_NAME}/${segs[0]}/index.md`
   return `${SITE_DIR_NAME}/${segs.slice(0, -1).join('/')}/${segs[segs.length - 1]}.md`
 }
+
+/** 사이트 A 원고의 url 목록 — B 빌드에서 A 경로 링크를 절대 URL(A 도메인)로 살릴 때 쓴다 */
+let siteAUrls: Set<string> | undefined
+export function siteAUrlSet(): Set<string> {
+  if (!siteAUrls) {
+    siteAUrls = new Set(
+      walk(join(CONTENT_ROOT, 'site-a'))
+        .map((f) => parseFrontmatter(readFileSync(f, 'utf8')).url)
+        .filter(Boolean),
+    )
+  }
+  return siteAUrls
+}

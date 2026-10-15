@@ -1,8 +1,8 @@
 ---
 url: /vs/kt-lg/
-title: KT와 LG U+ 인터넷 비교 · 요금과 결합
+title: KT·LG 인터넷 요금·결합 비교
 h1: KT vs LG U+ 인터넷 비교
-description: KT와 LG U+ 인터넷을 요금, 결합 할인, 설치비, 정보 공개 기준으로 비교했습니다.
+description: KT와 LG U+ 인터넷을 요금, 결합 할인, 설치비, 정보 공개 기준으로 비교하고 1인 가구·1G 결합 등 조건별 결론을 정리했습니다.
 keywords: [KTLG인터넷비교, KT유플러스비교, KTvsLG인터넷, KTLG어디가나은지]
 updated: 2026-09-13
 schema: [Article, BreadcrumbList, Organization]
@@ -12,7 +12,7 @@ schema: [Article, BreadcrumbList, Organization]
 
 <!-- hero -->
 
-두 곳의 차이는 **요금은 LG, 결합 구조는 조건에 따라 갈립니다.** LG가 전 속도에서 조금씩 저렴하고, 결합은 KT가 정액·LG가 속도 비례라서 어느 속도를 쓰느냐로 뒤집힙니다.
+KT와 LG U+ 인터넷 비교의 결론은 **요금은 LG, 결합 구조는 조건에 따라 갈린다**는 것입니다. LG가 3년 약정 기준 전 속도에서 같거나 월 1,100~2,200원 저렴하고, 결합은 KT가 정액 5,500원·LG가 속도 비례라서 어느 속도를 쓰느냐로 뒤집힙니다. LG는 모바일 1회선이면 결합 할인이 없다는 점도 갈림길입니다.
 
 [내 조건으로 비교하기](#상담)
 

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.jalkkalda.kr" }],
+      "destination": "https://jalkkalda.kr/:path*",
+      "statusCode": 301
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "jalkkalda.com" }],
+      "destination": "https://jalkkalda.kr/:path*",
+      "statusCode": 301
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.jalkkalda.com" }],
+      "destination": "https://jalkkalda.kr/:path*",
+      "statusCode": 301
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "kkaldu.kr" }],
+      "destination": "https://jalkkalda.kr/:path*",
+      "statusCode": 301
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.kkaldu.kr" }],
+      "destination": "https://jalkkalda.kr/:path*",
+      "statusCode": 301
+    }
+  ]
+}

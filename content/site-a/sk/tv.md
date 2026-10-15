@@ -1,8 +1,8 @@
 ---
 url: /sk/tv/
-title: SK B tv 요금제와 채널 수 비교
+title: SK B tv 요금제 | 채널 수
 h1: SK B tv 요금제
-description: SK브로드밴드 B tv 요금제별 월 요금과 채널 수, 넷플릭스 포함 상품, 셋톱박스 임대료를 정리했습니다.
+description: SK B tv 요금제를 기본·넷플릭스 계열로 나눠 채널 수와 결합별 월 요금을 비교하고, 셋톱박스 임대료와 출동비도 정리했습니다.
 keywords: [SKBtv요금제, SKTV요금제, Btv요금, SK인터넷TV, Btv채널]
 updated: 2026-09-13
 schema: [Article, BreadcrumbList, Organization]
@@ -12,7 +12,7 @@ schema: [Article, BreadcrumbList, Organization]
 
 <!-- hero -->
 
-B tv 요금제는 **같은 상품인데 가격이 세 갈래**입니다. TV만 쓸 때, 인터넷과 묶을 때, 휴대폰까지 묶을 때가 각각 다릅니다. 차이가 월 1만 원 가까이 나기 때문에 어느 열을 보고 있는지가 가장 중요합니다.
+SK B tv 요금제는 **같은 상품인데 가격이 세 갈래**입니다. TV만 쓸 때, 인터넷과 묶을 때, 휴대폰까지 묶을 때가 각각 다릅니다. B tv All 3년 약정이 휴대폰 결합 15,400원, TV 단독 18,700원이고 무약정 단독은 25,300원이라, 어느 열을 보고 있는지가 가장 중요합니다.
 
 [B tv 조건 상담](#상담)
 

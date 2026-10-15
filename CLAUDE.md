@@ -33,7 +33,7 @@ SEO 규칙(콘텐츠규칙)은 원고에도 그대로 적용 — `npm run check`
 
 원고는 프런트매터 `url:` 로 페이지와 짝지어진다(파일 이름 무관). 시트 TOP20 에 없는 url(예: /install/cost/)도 페이지가 된다.
 원고 문법: `<!-- 유형 -->` + `## H2 {#앵커}` · 표 아래 `*이탤릭*` = caption · `> 인용` = 참고 박스 · `[라벨](/경로/)` 한 줄 = 버튼 · `---` 이후 무시.
-한글 앵커 `#상담` 은 `#apply` 로 바꿔 렌더한다. 원고의 폼 주석대로 폼은 번호 + 수집 동의 + 제3자 제공 동의 + 만 14세.
+한글 앵커 `#상담` 은 `#apply` 로 바꿔 렌더한다. 폼은 **휴대폰 번호 하나 + 수집·이용 동의 하나**(2026-10-15, 백메가·통신직구 방식 — 원고 폼 주석의 제3자·만 14세 항목보다 우선). 보유 7일 이용 · 90일 후 파기.
 
 ## project33 과 헷갈리지 말 것
 
@@ -78,17 +78,17 @@ B 는 **금액(원) 표기 금지**(KAIT 가이드라인 위반 표시·광고).
 - 섹션 h2 위 영문 키커 = `data-kicker`(lib/site.ts `kickerOf`) 를 의사요소로 — DOM 글자가 아니다. 절차(ol.steps) 섹션은 어두운 패널, `#apply` 는 파랑 패널 + 오른쪽 폼.
 - 오른쪽 빠른 메뉴 `components/QuickMenu.tsx` — `CONFIG.quick`, 공개 페이지만, article 밖.
 - 상담 모달 `LeadDialog`(+`LeadDialogClient`) — 페이지의 `a[href="#apply"]` 클릭을 가로채 네이티브 `<dialog>` 로 연다(목차 링크 제외, JS 없으면 #apply 로 스크롤). #apply 섹션 카드와 같은 `LeadFormClient`.
-- 동의서 모달 `PrivacyDialog` — 폼 "보기" 가 연다. **폼이 실제로 보내는 필드만 적는다**(휴대폰 · 희망 조건 칩 · 신청 페이지) — 필드를 바꾸면 같이 고칠 것. 모달·동의서엔 h1~h4 · table · dl · ul 금지(감사). 법무 검토 전.
+- 동의서 모달 `PrivacyDialog` — 폼 "보기" 가 연다. **폼이 실제로 보내는 필드만 적는다**(휴대폰 번호 하나) — 필드를 바꾸면 같이 고칠 것. 모달·동의서엔 h1~h4 · table · dl · ul 금지(감사). 법무 검토 전.
 - `.container` 가 레이어 밖이라 구역별 container 여백·패널 규칙도 레이어 밖에 둔다(레이어 안이면 안 먹는다).
 - 레퍼런스의 후기 카드 · 현금 금액 카드 · 사은품 탭은 넣지 않았다 — 실제 후기·검증 금액이 없고, 금액은 운영규칙 10 · 사이트 B 금지.
 
 ## 배포 전 미정
 
-1. 사이트 B 브랜드명(A 는 `잘깔다` 확정) · A · B 푸터 고지문 (`lib/site.ts` CONFIG) · 도메인 — **A `NEXT_PUBLIC_SITE_URL`, B `NEXT_PUBLIC_SITE_URL_B` 로 따로.** B 빌드도 같은 .env.local 을 읽어서, 하나로 두면 B 의 canonical·sitemap·robots 가 A 도메인을 가리킨다. 둘 다 없으면 Vercel 빌드는 `VERCEL_PROJECT_PRODUCTION_URL` 을, 로컬은 localhost 를 쓴다(감사가 막는다). OG 이미지는 A 만 `public/og.png`(브랜드명이 들어간 그림 — B 는 브랜드 확정 후), 로고·파비콘은 `public/icon.png` · `apple-icon.png`. 마스코트는 `components/Mascot.tsx` + `public/img/`
-2. 상담 폼 켜기 — 제출 로직은 완성(`components/LeadFormClient.tsx` → project21_db `/api/submit`, project31 과 같은 서버). 남은 것: `.env.local` 에 `NEXT_PUBLIC_DB_SUBMIT_URL` + `NEXT_PUBLIC_DB_API_KEY`(A) · `NEXT_PUBLIC_DB_API_KEY_B`(B) — project21 sites 테이블에 사이트를 등록해 받는다. `lib/site.ts` `LEAD.collector`(수집 주체). 셋이 다 차야 `FORM_READY`. **제3자 제공은 꺼 둠**(`LEAD.thirdParty: false` — 운영자가 직접 상담, 백메가 방식. 폼 동의는 수집·이용 + 만 14세) — 접수 번호를 다른 업체에 넘기게 되면 `true` + `LEAD.recipient` 로 켠다(동의 항목 · 동의서 · 처리방침이 같이 바뀐다). 처리방침은 `app/privacy/page.tsx`(A·B 공통, 푸터·동의서 모달이 링크, 감사 제외) — `lib/site.ts` `PRIVACY`(보호책임자 · 연락처 · 수탁자 · 시행일)가 비어 있으면 자리 막대 + noindex. 법무 검토 전. **키 확인용으로 실제 키에 POST 금지**(빈 본문도 저장·디스코드 알림)
+1. 사이트 B 브랜드명(A 는 `잘깔다` 확정) · A · B 푸터 고지문 (`lib/site.ts` CONFIG) · 도메인 — **A 는 `https://jalkkalda.kr` 확정(2026-10-15, `lib/site.ts` CONFIG.A.domain).** jalkkalda.com · www · kkaldu.kr 는 `vercel.json` 에서 301 로 jalkkalda.kr 로 보낸다(도메인을 Vercel 프로젝트에 연결해야 동작). B 는 미정 — `CONFIG.B.domain` 또는 `NEXT_PUBLIC_SITE_URL_B`. 우선순위: 환경변수 → CONFIG.domain → `VERCEL_PROJECT_PRODUCTION_URL` → localhost(감사가 막는다). B 빌드도 같은 .env.local 을 읽으니 `NEXT_PUBLIC_SITE_URL` 에 B 주소를 넣지 말 것. OG 이미지는 A 만 `public/og.png`(브랜드명이 들어간 그림 — B 는 브랜드 확정 후), 로고·파비콘은 `public/icon.png` · `apple-icon.png`. 마스코트는 `components/Mascot.tsx` + `public/img/`
+2. 상담 폼 켜기 — 제출 로직은 완성(`components/LeadFormClient.tsx` → project21_db `/api/submit`, project31 과 같은 서버). 접수 서버 주소와 A 키(DB 관리자 '인터넷' 업종 jalkkalda.kr)는 `lib/site.ts` 기본값으로 들어가 있다(2026-10-15). 남은 것: B 키(`NEXT_PUBLIC_DB_API_KEY_B` 또는 `DB_API_KEY_DEFAULT.B`) · `LEAD.collector`(수집 주체). 셋이 다 차야 `FORM_READY`. **제3자 제공은 꺼 둠**(`LEAD.thirdParty: false` — 운영자가 직접 상담, 백메가 방식. 폼 동의는 수집·이용 하나) — 접수 번호를 다른 업체에 넘기게 되면 `true` + `LEAD.recipient` 로 켠다(동의 항목 · 동의서 · 처리방침이 같이 바뀐다). 처리방침은 `app/privacy/page.tsx`(A·B 공통, 푸터·동의서 모달이 링크, 감사 제외) — `lib/site.ts` `PRIVACY`(보호책임자 · 연락처 · 수탁자 · 시행일)가 비어 있으면 자리 막대 + noindex. 법무 검토 전. **키 확인용으로 실제 키에 POST 금지**(빈 본문도 저장·디스코드 알림)
 3. 원고 속 요금 재확인(원고 README: 2026-09-13 수집, 발행 전 재확인) · plans.csv 연동
 4. 계산기 — /tools/penalty/ · /tools/expiry/ 는 완성(`lib/calc.ts` 식 + `PenaltyCalc` · `ExpiryCalc`, PageView `TOOL_WIDGETS` 가 원고 도구 섹션 아래에 붙인다). KT 180일 식은 KT 약관 주요설명서(2025-07)로 확인, SK·LG 90/180/240일은 원고 기준(LG 예시로 검산). /tools/coverage/ 는 주소 조회 API 가 없어 위젯 없음. /tools/bill/ 은 원고 없음. 속도측정 위젯도 "준비 중"
-5. 원고 링크 대상 미발행: /tools/bill/ · /guide/scam/ · /guide/precon/ · /bundle/card/ · /bundle/mobile/ · /vs/kt-sk/ · /vs/kt-lg/ (+ TV 계열 원고 대기). B 원고 install-cash · switch-cash 가 A 경로(/install/cost/ · /switch/)를 상대 링크로 건다 — B 에 없는 경로라 일반 텍스트로 나간다(PageView `Inline`). A 로 보내려면 절대 URL 필요(도메인 확정 후)
+5. 원고 링크 대상 미발행: /tools/bill/ · /guide/scam/ · /guide/precon/ · /bundle/card/ · /bundle/mobile/ · /vs/kt-sk/ · /vs/kt-lg/ (+ TV 계열 원고 대기). B 원고 install-cash · switch-cash · tv-cash 가 A 경로(/install/cost/ · /switch/ · /bundle/tv/)를 상대 링크로 건다 — A 원고에 있는 경로면 A 도메인 절대 URL 로 나간다(`lib/site.ts` crossSiteHref). 그 밖에 없는 경로는 일반 텍스트
 
 <!-- BEGIN:nextjs-agent-rules -->
 

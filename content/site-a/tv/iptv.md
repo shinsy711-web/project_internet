@@ -2,7 +2,7 @@
 url: /tv/iptv/
 title: IPTV 요금제 구조와 고르는 기준
 h1: IPTV 요금제
-description: IPTV 요금제가 어떻게 구성되는지, 채널 수·OTT·셋톱박스 임대료를 합친 실제 부담을 계산하는 방법을 정리했습니다.
+description: IPTV 요금제가 어떻게 구성되는지, 채널 수·OTT·셋톱박스 임대료를 합친 실제 월 부담을 SK B tv 예시로 계산하는 법을 정리했습니다.
 keywords: [IPTV요금제, IPTV, 인터넷TV, IPTV비교, IPTV채널, 인터넷TV요금]
 updated: 2026-09-13
 schema: [Article, BreadcrumbList, Organization]
@@ -12,7 +12,7 @@ schema: [Article, BreadcrumbList, Organization]
 
 <!-- hero -->
 
-IPTV 요금제는 **표에 적힌 금액이 실제 청구액이 아닙니다.** 셋톱박스 임대료가 빠져 있고, 결합과 약정에 따라 같은 상품이 세 가격으로 갈립니다. 이 구조를 먼저 알면 비교가 쉬워집니다.
+IPTV 요금제는 **표에 적힌 금액이 실제 청구액이 아닙니다.** 셋톱박스 임대료가 빠져 있고, 결합과 약정에 따라 같은 상품이 TV 단독·인터넷 결합·휴대폰 결합 세 가격으로 갈립니다. SK B tv 스탠다드 12,100원에 AI 5 셋톱박스를 붙이면 월 19,800원으로 표의 1.6배입니다. 이 구조를 먼저 알면 비교가 쉬워집니다.
 
 [IPTV 조건 상담](#상담)
 

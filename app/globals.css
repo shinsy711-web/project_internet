@@ -425,7 +425,7 @@ article > section#apply > .container {
   }
   .hero-side {
     width: 100%;
-    max-width: 19rem;
+    max-width: 30rem;
     margin-inline: auto;
   }
   @media (min-width: 900px) {
@@ -439,42 +439,67 @@ article > section#apply > .container {
       flex: 1 1 auto;
     }
     .hero-side {
-      flex: 0 0 min(28rem, 40%);
+      flex: 0 0 min(26rem, 42%);
       max-width: none;
       margin: 0;
     }
   }
-  .hero-art {
-    display: block;
-    width: 100%;
-    height: auto;
-    filter: drop-shadow(0 28px 36px rgb(37 99 235 / 0.16));
+  /* 히어로 상담 폼(components/HeroLead.tsx) — 말풍선 + 깔두 + 폼 카드 */
+  .hero-lead-box {
+    display: grid;
+    gap: 0.25rem;
   }
-  /* 마스코트(components/Mascot.tsx) — 히어로 · 404 */
-  .hero-mascot {
-    display: block;
-    width: min(100%, 11rem);
-    margin-inline: auto;
-    filter: drop-shadow(0 24px 30px rgb(37 99 235 / 0.18));
+  .hero-talk {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+  }
+  .hero-bubble {
+    position: relative;
+    flex: 1 1 auto;
+    margin-bottom: 1.6rem;
+    padding: 0.85rem 1.05rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line-strong);
+    border-radius: 16px;
+    box-shadow: 0 10px 24px rgb(15 23 42 / 0.08);
+    color: var(--color-ink);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    word-break: keep-all;
 
-    @media (min-width: 900px) {
-      width: min(100%, 19rem);
+    & b {
+      color: var(--color-accent);
+      font-weight: 800;
+    }
+    /* 꼬리 — 오른쪽 깔두를 가리킨다 */
+    &::after {
+      content: '';
+      position: absolute;
+      right: -7px;
+      bottom: 1.4rem;
+      width: 12px;
+      height: 12px;
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-line-strong);
+      border-right: 1px solid var(--color-line-strong);
+      transform: rotate(45deg);
     }
   }
-  /* 배경이 그려진 포즈(길 잃음) — 잘린 아랫변을 둥글린다 */
-  .hero-mascot.is-framed {
-    border-radius: 0 0 1.5rem 1.5rem;
+  .hero-talk-mascot {
+    flex: 0 0 auto;
+    width: 5.5rem;
+    height: auto;
+    filter: drop-shadow(0 12px 16px rgb(37 99 235 / 0.18));
+
+    @media (min-width: 900px) {
+      width: 6.5rem;
+    }
   }
-  /* 요금 카드 그래픽 위로 빼꼼 — 그림 아랫변이 앞 카드 윗변(viewBox 78/300)에 얹힌다 */
-  .hero-art-wrap {
-    position: relative;
-  }
-  .hero-art-peek {
-    position: absolute;
-    top: 26%;
-    left: 9%;
-    width: 33%;
-    transform: translateY(-98%);
+  .hero-lead-box .lead-card {
+    max-width: none;
+    margin: 0;
+    padding: 1.25rem;
   }
   /* 섹션 장식 — CSS 배경이라 마크업·감사에 영향이 없다. 넓은 화면에서만 */
   @media (min-width: 1024px) {
@@ -1173,112 +1198,6 @@ article > section#apply > .container {
   }
   .lead-form p {
     margin: 0;
-  }
-
-  /* 상담 받을 조건 — 금액 없이 고르기만(선택) */
-  .lead-pick {
-    display: grid;
-    gap: 0.6rem;
-    padding: 0.9rem 1rem 1rem;
-    border: 1px solid var(--color-line);
-    border-radius: 18px;
-    background: var(--color-canvas);
-  }
-  .lead-pick-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    min-height: 1.9rem;
-  }
-  .lead-pick-title {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    font-size: 0.82rem;
-    font-weight: 800;
-    color: var(--color-accent);
-  }
-  .lead-pick-title svg {
-    width: 0.95rem;
-    height: 0.95rem;
-  }
-  .lead-pick-title small {
-    font-size: 0.76rem;
-    font-weight: 600;
-    color: var(--color-ink-soft);
-  }
-  .lead-pick-reset {
-    padding: 0.2rem 0.7rem;
-    border: 1px solid var(--color-accent-line);
-    border-radius: var(--radius-pill);
-    background: var(--color-surface);
-    color: var(--color-accent);
-    font: inherit;
-    font-size: 0.74rem;
-    font-weight: 800;
-    cursor: pointer;
-  }
-  .lead-pick-row {
-    display: grid;
-    grid-template-columns: 3.25rem minmax(0, 1fr);
-    align-items: center;
-    gap: 0.5rem;
-  }
-  .lead-pick-label {
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: var(--color-ink-soft);
-  }
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-  }
-  .chip {
-    position: relative;
-    display: inline-flex;
-    cursor: pointer;
-  }
-  .chip input {
-    position: absolute;
-    inset: 0;
-    margin: 0;
-    opacity: 0;
-    cursor: inherit;
-  }
-  .chip span {
-    display: inline-flex;
-    align-items: center;
-    min-height: 2rem;
-    padding: 0.2rem 0.75rem;
-    border: 1px solid var(--color-line-strong);
-    border-radius: var(--radius-pill);
-    background: var(--color-surface);
-    font-size: 0.8rem;
-    font-weight: 700;
-    white-space: nowrap;
-    color: var(--color-ink);
-    transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
-  }
-  .chip:hover span {
-    border-color: var(--color-accent-line);
-  }
-  .chip input:checked + span {
-    border-color: var(--color-cta);
-    background: var(--color-accent-soft);
-    box-shadow: inset 0 0 0 1px var(--color-cta);
-    color: var(--color-accent);
-  }
-  .chip input:focus-visible + span {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
-  }
-  .chip input:disabled {
-    cursor: not-allowed;
-  }
-  .chip input:disabled + span {
-    opacity: 0.6;
   }
 
   .lead-field {

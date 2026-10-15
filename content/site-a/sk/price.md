@@ -1,8 +1,8 @@
 ---
 url: /sk/price/
-title: SK 인터넷 요금제 | 속도별 월요금
+title: SK 인터넷 요금제 | 약정·결합가
 h1: SK 인터넷 요금제
-description: SK브로드밴드 인터넷 요금제를 속도별·약정별로 정리했습니다. 무약정 요금과 B tv 결합가까지 포함했습니다.
+description: SK 인터넷 요금제를 속도별, 3년부터 무약정까지 약정별로 정리했습니다. 와이파이 요금제와 B tv·휴대폰 결합가도 공식 요금표 기준입니다.
 keywords: [SK인터넷요금제, SKT인터넷요금]
 updated: 2026-09-13
 schema: [Article, BreadcrumbList, Organization]
@@ -12,7 +12,7 @@ schema: [Article, BreadcrumbList, Organization]
 
 <!-- hero -->
 
-SK브로드밴드는 3사 중 유일하게 **무약정 요금까지 공식 사이트에 전부 공시**합니다. 아래 표는 bworld.co.kr 공식 요금표를 그대로 정리한 것이고, 모두 부가세 포함 금액입니다.
+SK 인터넷 요금제는 3년 약정 기준 광랜(100M) 22,000원, 기가라이트(500M) 33,000원, 기가(1G) 38,500원입니다. SK브로드밴드는 3사 중 유일하게 **무약정 요금까지 공식 사이트에 전부 공시**합니다. 아래 표는 bworld.co.kr 공식 요금표를 그대로 정리한 것이고, 모두 부가세 포함 금액입니다.
 
 <!-- table -->
 ## SK 인터넷 요금제 전체 (공유기 없음)
