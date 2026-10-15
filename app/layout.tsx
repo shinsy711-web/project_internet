@@ -13,7 +13,12 @@ export const metadata: Metadata = {
   // 규칙 39 — robots 메타를 전 페이지에. 원고 대기 페이지는 RoutePage 에서 noindex 로 덮는다
   robots: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
   formatDetection: { telephone: false, date: false, address: false, email: false },
-  icons: { icon: { url: LOGO_IMAGE, type: 'image/png', sizes: '512x512' }, apple: '/apple-icon.png' },
+  // favicon.ico(16·32·48) — 네이버 검색결과·구형 브라우저는 /favicon.ico 를 먼저 찾는다. 512 PNG 는 고해상도용
+  icons: {
+    icon: [{ url: '/favicon.ico', sizes: 'any' }, { url: LOGO_IMAGE, type: 'image/png', sizes: '512x512' }],
+    shortcut: '/favicon.ico',
+    apple: '/apple-icon.png',
+  },
   verification: {
     ...(NAVER_VERIFICATION ? { other: { 'naver-site-verification': NAVER_VERIFICATION } } : {}),
     ...(GOOGLE_VERIFICATION ? { google: GOOGLE_VERIFICATION } : {}),
