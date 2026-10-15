@@ -118,7 +118,7 @@ export const isoDate = (d: string) => (/^\d{4}-\d{2}-\d{2}$/.test(d) ? `${d}T00:
 
 /** 검색엔진 소유확인 · GA — 값이 없으면 태그 자체를 렌더하지 않는다 (플레이스홀더 금지) */
 // 네이버 서치어드바이저 소유확인 — 페이지 소스에 그대로 노출되는 공개값이라 코드에 둔다. A = jalkkalda.kr (2026-10-15)
-export const NAVER_VERIFICATION = process.env.NEXT_PUBLIC_NAVER_VERIFICATION || (SITE_KEY === 'A' ? 'fc5170a61d28a94262b58a1b2c865561927de241' : '')
+export const NAVER_VERIFICATION = process.env.NEXT_PUBLIC_NAVER_VERIFICATION || (SITE_KEY === 'A' ? 'f36b804cc6fa994b43c5b9941b99f2a8ff295446' : '')
 export const GOOGLE_VERIFICATION = process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || ''
 export const GA_ID = process.env.NEXT_PUBLIC_GA_ID || ''
 
